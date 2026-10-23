@@ -1,0 +1,277 @@
+/* ẨN TOÀN BỘ THANH CUỘN TRÊN MỌI TRÌNH DUYỆT */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 30%, #fecdd3 65%, #ffe4e9 100%);
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  user-select: none;
+  position: relative;
+}
+
+/* Tối ưu chất lượng ảnh và tăng tốc GPU chống lag */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+#customBgLayer {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.5s ease;
+  will-change: opacity;
+}
+
+#customBgOverlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 241, 242, 0.82) 0%, rgba(254, 205, 211, 0.78) 100%);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.4s ease;
+}
+
+.bokeh-light {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 1;
+  animation: floatBokeh 10s infinite alternate ease-in-out;
+  will-change: transform;
+}
+.bokeh-1 { width: 340px; height: 340px; background: #fbcfe8; top: -40px; left: -60px; }
+.bokeh-2 { width: 420px; height: 420px; background: #fed7aa; bottom: -80px; right: -80px; animation-duration: 12s; }
+.bokeh-3 { width: 280px; height: 280px; background: #ffe4e6; top: 35%; right: 10%; animation-duration: 8s; }
+
+@keyframes floatBokeh {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(25px, 20px, 0) scale(1.1); }
+}
+
+/* Canvas hiệu ứng hạt rơi (Hoa, Tim, Thiệp, Sao) & Canvas pháo hoa */
+#falling-canvas, #confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#falling-canvas  { z-index: 3; }
+#confetti-canvas { z-index: 60; }
+
+.title-font {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+.title-fixed {
+  color: #9d174d;
+  text-shadow: 0 2px 10px rgba(190, 24, 93, 0.2), 0 0 15px rgba(255, 255, 255, 0.8);
+}
+
+.keyword-dynamic {
+  color: #be185d;
+  text-shadow: 0 4px 14px rgba(190, 24, 93, 0.28), 0 0 20px rgba(255, 255, 255, 0.9);
+}
+
+.cursor-neon {
+  display: inline-block;
+  width: 3px;
+  height: 1.05em;
+  background-color: #be185d;
+  vertical-align: -0.1em;
+  margin-left: 5px;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(190, 24, 93, 0.7);
+  animation: neonBlink 0.85s infinite ease-in-out;
+}
+
+@keyframes neonBlink {
+  0%, 45%  { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100%     { opacity: 1; }
+}
+
+.wish-container {
+  font-family: 'Playfair Display', serif;
+  color: #831843;
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.typing-sub-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  background-color: #be185d;
+  vertical-align: -0.1em;
+  margin-left: 2px;
+  border-radius: 1px;
+  animation: neonBlink 0.75s infinite ease-in-out;
+}
+
+.gift-bounce {
+  animation: giftBounce 2.4s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+.gift-bounce:hover {
+  animation-play-state: paused;
+  transform: scale(1.12) translateY(-4px);
+}
+
+@keyframes giftBounce {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  15%      { transform: translate3d(0, -14px, 0) scale(1.05, 0.95); }
+  28%      { transform: translate3d(0, 0, 0) scale(0.96, 1.04); }
+  38%      { transform: translate3d(0, -7px, 0) scale(1.02, 0.98); }
+  48%      { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.gift-lid {
+  transform-origin: left top;
+  transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+.gift-open .gift-lid {
+  transform: translate3d(0, -24px, 0) rotate(-32deg) scale(0.95);
+}
+
+.custom-modal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0) scale(0.88);
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+.custom-modal.active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  pointer-events: auto;
+}
+
+.cursive-font     { font-family: 'Alex Brush', cursive; }
+.handwriting-font { font-family: 'Dancing Script', cursive; }
+
+/* =========================================================
+   HIỆU ỨNG CUỘN PHIM TỰ ĐỘNG MƯỢT MÀ (AUTO FILMSTRIP)
+   ========================================================= */
+.filmstrip-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 12px 0;
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.filmstrip-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  will-change: transform;
+  animation: autoFilmScroll var(--scroll-duration, 18s) linear infinite;
+}
+
+.filmstrip-track:hover,
+.filmstrip-track:active {
+  animation-play-state: paused;
+}
+
+@keyframes autoFilmScroll {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.film-card-item {
+  width: 145px;
+  flex-shrink: 0;
+  background: #ffffff;
+  padding: 7px 7px 12px 7px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(157, 23, 77, 0.14), 0 0 0 1px rgba(251, 191, 36, 0.35);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (min-width: 640px) {
+  .film-card-item {
+    width: 170px;
+    padding: 8px 8px 14px 8px;
+  }
+}
+
+.film-card-item:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 14px 28px rgba(190, 24, 93, 0.25), 0 0 0 2px #f59e0b;
+}
+
+.disc-spin   { animation: discRotate 4s linear infinite; will-change: transform; }
+.disc-paused { animation-play-state: paused; }
+
+@keyframes discRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.wave-bar {
+  width: 3px;
+  background-color: #be185d;
+  border-radius: 2px;
+  animation: waveDance 1s ease-in-out infinite alternate;
+}
+.wave-bar:nth-child(1) { height: 5px;  animation-delay: 0.1s; }
+.wave-bar:nth-child(2) { height: 13px; animation-delay: 0.3s; }
+.wave-bar:nth-child(3) { height: 7px;  animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { height: 15px; animation-delay: 0.4s; }
+
+@keyframes waveDance {
+  0%   { height: 4px; }
+  100% { height: 16px; }
+}
+.wave-paused .wave-bar {
+  animation-play-state: paused;
+  height: 4px !important;
+}
+
+#toastMsg {
+  transform: translateY(100px);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+#toastMsg.show {
+  transform: translateY(0);
+  opacity: 1;
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,14 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Alex+Brush&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Alex+Brush&family=Dancing+Script:wght@600;700&display=swap"
+    rel="stylesheet">
 
   <!-- CSS riêng -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="flex flex-col justify-between items-center min-h-screen px-4 py-4 sm:py-6 relative">
 
   <!-- Lớp ảnh nền tùy chỉnh & lớp phủ làm mờ pastel -->
@@ -33,7 +37,8 @@
 
   <!-- Thẻ phát nhạc ẩn (MP3 & YouTube Player ẩn) -->
   <audio id="bgAudio" loop preload="auto"></audio>
-  <div id="ytHiddenContainer" class="fixed -top-[9999px] -left-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden">
+  <div id="ytHiddenContainer"
+    class="fixed -top-[9999px] -left-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden">
     <div id="ytPlayer"></div>
   </div>
 
@@ -41,32 +46,39 @@
        HEADER THANH CÔNG CỤ
        ============================================================ -->
   <header id="appHeader" class="w-full max-w-4xl flex flex-wrap gap-2 justify-between items-center z-20">
-    <div class="text-[11px] sm:text-xs tracking-[0.2em] text-pink-800 font-semibold uppercase flex items-center gap-2 drop-shadow-sm">
+    <div
+      class="text-[11px] sm:text-xs tracking-[0.2em] text-pink-800 font-semibold uppercase flex items-center gap-2 drop-shadow-sm">
       <span class="inline-block w-2.5 h-2.5 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899] animate-ping"></span>
       <span id="badgeText">20.10 Vietnamese Women's Day</span>
     </div>
 
     <!-- Cụm công cụ (Creator Mode) -->
     <div id="creatorToolbar" class="flex items-center gap-2 sm:gap-2.5">
-      <button id="openEditorModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-md transition-all text-xs font-semibold backdrop-blur-md active:scale-95">
+      <button id="openEditorModalBtn"
+        class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-md transition-all text-xs font-semibold backdrop-blur-md active:scale-95">
         <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
         <span>Chỉnh sửa thông điệp, hiệu ứng &amp; nhạc 🌸</span>
       </button>
 
       <!-- Nút phát lại hiệu ứng gõ chữ -->
-      <button id="restartBtn" title="Phát lại hiệu ứng gõ chữ" class="p-2 rounded-full bg-white/80 hover:bg-white text-pink-700 border border-pink-200 shadow-sm transition-all backdrop-blur-md active:scale-95">
+      <button id="restartBtn" title="Phát lại hiệu ứng gõ chữ"
+        class="p-2 rounded-full bg-white/80 hover:bg-white text-pink-700 border border-pink-200 shadow-sm transition-all backdrop-blur-md active:scale-95">
         <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.3" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
       </button>
     </div>
 
     <!-- Cụm tinh gọn cho Người nhận (Chỉ gồm nút đĩa nhạc) -->
     <div id="recipientToolbar" class="hidden items-center gap-2">
-      <button id="togglePlayMusicBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/85 hover:bg-white border border-pink-200 text-pink-800 shadow-sm transition-all text-xs font-medium backdrop-blur-md active:scale-95">
-        <span id="miniDisc" class="w-4 h-4 rounded-full border border-pink-400 bg-pink-100 flex items-center justify-center disc-spin disc-paused">
+      <button id="togglePlayMusicBtn"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/85 hover:bg-white border border-pink-200 text-pink-800 shadow-sm transition-all text-xs font-medium backdrop-blur-md active:scale-95">
+        <span id="miniDisc"
+          class="w-4 h-4 rounded-full border border-pink-400 bg-pink-100 flex items-center justify-center disc-spin disc-paused">
           <span class="w-1.5 h-1.5 rounded-full bg-pink-600"></span>
         </span>
         <span id="soundWave" class="flex items-center gap-0.5 h-4 px-1 wave-paused">
@@ -83,10 +95,12 @@
   <!-- ============================================================
        KHU VỰC THÔNG ĐIỆP CHÍNH
        ============================================================ -->
-  <main class="w-full max-w-3xl flex flex-col items-center justify-center text-center my-auto z-10 py-3 sm:py-4 space-y-6 sm:space-y-8">
+  <main
+    class="w-full max-w-3xl flex flex-col items-center justify-center text-center my-auto z-10 py-3 sm:py-4 space-y-6 sm:space-y-8">
 
     <!-- 1. Tiêu đề xoay vòng -->
-    <div class="title-font flex items-center justify-center flex-wrap gap-x-2 text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
+    <div
+      class="title-font flex items-center justify-center flex-wrap gap-x-2 text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
       <span id="displayTitleFixed" class="title-fixed">You're My</span>
       <span class="inline-flex items-center ml-1 sm:ml-2">
         <span id="keywordText" class="keyword-dynamic italic">Queen</span>
@@ -95,13 +109,16 @@
     </div>
 
     <!-- 2. Lời chúc gõ từng chữ -->
-    <div id="wishContainer" class="wish-container text-sm sm:text-base md:text-lg italic leading-relaxed sm:leading-loose text-center max-w-xl min-h-[160px] sm:min-h-[180px] flex flex-col items-center justify-center space-y-1 sm:space-y-1.5 px-3">
+    <div id="wishContainer"
+      class="wish-container text-sm sm:text-base md:text-lg italic leading-relaxed sm:leading-loose text-center max-w-xl min-h-[160px] sm:min-h-[180px] flex flex-col items-center justify-center space-y-1 sm:space-y-1.5 px-3">
     </div>
 
     <!-- 3. Hộp quà nảy nhẹ -->
     <div class="flex flex-col items-center justify-center pt-1 sm:pt-2">
-      <div id="giftBoxBtn" class="gift-bounce cursor-pointer relative group p-3 select-none" title="Bấm để mở hộp quà bí mật!">
-        <svg id="giftSvg" class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_8px_16px_rgba(190,24,93,0.22)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div id="giftBoxBtn" class="gift-bounce cursor-pointer relative group p-3 select-none"
+        title="Bấm để mở hộp quà bí mật!">
+        <svg id="giftSvg" class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_8px_16px_rgba(190,24,93,0.22)]"
+          viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <ellipse cx="50" cy="94" rx="34" ry="5" fill="rgba(157, 23, 77, 0.2)" />
           <rect x="22" y="42" width="56" height="48" rx="6" fill="#fbb65b" />
           <rect x="22" y="42" width="56" height="48" rx="6" fill="url(#box-gradient)" />
@@ -130,8 +147,9 @@
           </defs>
         </svg>
 
-        <div class="mt-2 text-[11px] font-medium tracking-wider text-pink-700 bg-white/80 px-3.5 py-0.5 rounded-full border border-pink-200 shadow-xs group-hover:bg-pink-500 group-hover:text-white transition-all">
-          Mở quà bí mật 🎁
+        <div
+          class="mt-2 text-[11px] font-medium tracking-wider text-pink-700 bg-white/80 px-3.5 py-0.5 rounded-full border border-pink-200 shadow-xs group-hover:bg-pink-500 group-hover:text-white transition-all">
+          🎁
         </div>
       </div>
     </div>
@@ -140,10 +158,13 @@
   <!-- ============================================================
        MODAL: CHỈNH SỬA THÔNG ĐIỆP, ALBUM ẢNH, HIỆU ỨNG RƠI
        ============================================================ -->
-  <div id="editorModalOverlay" class="fixed inset-0 bg-pink-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 custom-modal">
-    <div class="relative w-full max-w-2xl bg-gradient-to-br from-white via-pink-50/95 to-rose-50/95 rounded-3xl p-4 sm:p-7 shadow-[0_20px_60px_rgba(157,23,77,0.4)] border-2 border-white/90 overflow-hidden text-left flex flex-col max-h-[92vh] max-h-[92dvh]">
+  <div id="editorModalOverlay"
+    class="fixed inset-0 bg-pink-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 custom-modal">
+    <div
+      class="relative w-full max-w-2xl bg-gradient-to-br from-white via-pink-50/95 to-rose-50/95 rounded-3xl p-4 sm:p-7 shadow-[0_20px_60px_rgba(157,23,77,0.4)] border-2 border-white/90 overflow-hidden text-left flex flex-col max-h-[92vh] max-h-[92dvh]">
 
-      <button id="closeEditorModalBtn" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-pink-100 hover:bg-pink-200 text-pink-800 transition-colors">
+      <button id="closeEditorModalBtn"
+        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-pink-100 hover:bg-pink-200 text-pink-800 transition-colors">
         <svg class="w-4 h-4 stroke-current" stroke-width="2.5" fill="none" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -153,25 +174,32 @@
         <span class="text-2xl">✨</span>
         <div>
           <h3 class="font-bold text-pink-950 text-base sm:text-lg">Tùy Chỉnh Thiệp, Hiệu Ứng Rơi &amp; Tên Trang</h3>
-          <p class="text-xs text-pink-600">Mọi chỉnh sửa sẽ được nén gọn và ẩn toàn bộ thanh công cụ khi gửi link!</p>
+          <p class="text-xs text-pink-600">Hãy chỉnh theo ý mình thích </p>
         </div>
       </div>
 
       <div class="space-y-3.5 overflow-y-auto no-scrollbar pr-0.5 text-xs">
 
         <!-- 0. TÊN TRANG WEB, TIÊU ĐỀ GÓC TRÊN & DÒNG CHÂN TRANG -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-white/85 p-3.5 rounded-2xl border border-pink-200 shadow-xs">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-white/85 p-3.5 rounded-2xl border border-pink-200 shadow-xs">
           <div>
             <label class="block font-semibold text-pink-900 mb-1">1. Tên tab trình duyệt:</label>
-            <input type="text" id="inputPageTitle" value="Chúc Mừng 20/10 - You're My Queen" placeholder="Nhập tên tab..." class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputPageTitle" value="Chúc Mừng 20/10 - You're My Queen"
+              placeholder="Nhập tên tab..."
+              class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
           <div>
             <label class="block font-semibold text-pink-900 mb-1">2. Chữ góc trên (Header):</label>
-            <input type="text" id="inputBadgeText" value="20.10 Vietnamese Women's Day" placeholder="VD: 20.10 Vietnamese Women's Day" class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputBadgeText" value="20.10 Vietnamese Women's Day"
+              placeholder="VD: 20.10 Vietnamese Women's Day"
+              class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
           <div>
             <label class="block font-semibold text-pink-900 mb-1">3. Chữ cuối trang (Footer):</label>
-            <input type="text" id="inputFooterText" value="Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam" placeholder="VD: Gửi trọn yêu thương ngày 20/10..." class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputFooterText" value="Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam"
+              placeholder="VD: Gửi trọn yêu thương ngày 20/10..."
+              class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
         </div>
 
@@ -181,27 +209,32 @@
             <span>🎨 Chọn kiểu hiệu ứng bay lơ lửng trên trang:</span>
           </label>
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <label class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
+            <label
+              class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
               <input type="radio" name="fallEffect" value="petals" checked class="accent-pink-600 mb-1">
               <span class="text-base">🌸</span>
               <span class="text-[11px] font-semibold text-pink-900">Cánh hoa hồng</span>
             </label>
-            <label class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
+            <label
+              class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
               <input type="radio" name="fallEffect" value="hearts" class="accent-pink-600 mb-1">
               <span class="text-base">💖</span>
               <span class="text-[11px] font-semibold text-pink-900">Mưa trái tim</span>
             </label>
-            <label class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
+            <label
+              class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
               <input type="radio" name="fallEffect" value="letters" class="accent-pink-600 mb-1">
               <span class="text-base">✉️</span>
               <span class="text-[11px] font-semibold text-pink-900">Thiệp thư bay</span>
             </label>
-            <label class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
+            <label
+              class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all">
               <input type="radio" name="fallEffect" value="stars" class="accent-pink-600 mb-1">
               <span class="text-base">✨</span>
               <span class="text-[11px] font-semibold text-pink-900">Sao phát sáng</span>
             </label>
-            <label class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all col-span-2 sm:col-span-1">
+            <label
+              class="flex flex-col items-center p-2 rounded-xl border border-pink-200 bg-pink-50/40 hover:bg-pink-100/60 cursor-pointer text-center transition-all col-span-2 sm:col-span-1">
               <input type="radio" name="fallEffect" value="mix" class="accent-pink-600 mb-1">
               <span class="text-base">🎀</span>
               <span class="text-[11px] font-semibold text-pink-900">Hỗn hợp tất cả</span>
@@ -215,16 +248,19 @@
             <label class="font-bold text-pink-900 flex items-center gap-1.5">
               <span>🎁 Album ảnh cuộn phim tự động trong hộp quà:</span>
             </label>
-            <button id="clearAllPhotosBtn" class="text-[10px] text-pink-600 hover:text-pink-800 underline">Xóa hết ảnh</button>
+            <button id="clearAllPhotosBtn" class="text-[10px] text-pink-600 hover:text-pink-800 underline">Xóa hết
+              ảnh</button>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
-              <span class="text-[11px] text-pink-700 block mb-0.5">Tải ảnh từ máy (Tự động nén siêu mượt):</span>
-              <input type="file" id="multiPhotosFileInput" multiple accept="image/*" class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200">
+              <span class="text-[11px] text-pink-700 block mb-0.5">Tải ảnh từ máy :</span>
+              <input type="file" id="multiPhotosFileInput" multiple accept="image/*"
+                class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200">
             </div>
             <div>
               <span class="text-[11px] text-pink-700 block mb-0.5">Hoặc dán danh sách link ảnh (mỗi dòng 1 link):</span>
-              <textarea id="inputPhotosUrls" rows="2" placeholder="https://.../anh1.jpg&#10;https://.../anh2.jpg" class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+              <textarea id="inputPhotosUrls" rows="2" placeholder="https://.../anh1.jpg&#10;https://.../anh2.jpg"
+                class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
             </div>
           </div>
           <div>
@@ -232,8 +268,10 @@
               <span>Danh sách ảnh &amp; thông điệp từng ảnh (<span id="photoCountBadge">0</span> ảnh):</span>
               <span class="text-[10px] text-pink-500 italic">Nhập lời nhắn riêng bên dưới mỗi ảnh</span>
             </div>
-            <div id="photosThumbnailList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[190px] overflow-y-auto no-scrollbar py-1.5 min-h-[60px] border border-dashed border-pink-200 rounded-xl px-2 bg-pink-50/30">
-              <span class="text-pink-400 text-[11px] italic col-span-full text-center py-3">Chưa có ảnh nào được thêm...</span>
+            <div id="photosThumbnailList"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[190px] overflow-y-auto no-scrollbar py-1.5 min-h-[60px] border border-dashed border-pink-200 rounded-xl px-2 bg-pink-50/30">
+              <span class="text-pink-400 text-[11px] italic col-span-full text-center py-3">Chưa có ảnh nào được
+                thêm...</span>
             </div>
           </div>
         </div>
@@ -244,16 +282,19 @@
             <label class="font-bold text-pink-900 flex items-center gap-1.5">
               <span>🖼️ Ảnh nền trang web:</span>
             </label>
-            <button id="clearBgBtn" class="text-[10px] text-pink-600 hover:text-pink-800 underline">Về nền pastel mặc định</button>
+            <button id="clearBgBtn" class="text-[10px] text-pink-600 hover:text-pink-800 underline">Về nền pastel mặc
+              định</button>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <span class="text-[11px] text-pink-700 block mb-0.5">Chọn ảnh nền từ máy:</span>
-              <input type="file" id="bgFileInput" accept="image/*" class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200">
+              <input type="file" id="bgFileInput" accept="image/*"
+                class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200">
             </div>
             <div>
               <span class="text-[11px] text-pink-700 block mb-0.5">Hoặc link ảnh nền:</span>
-              <input type="url" id="inputBgUrl" placeholder="https://.../anh-nen.jpg" class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+              <input type="url" id="inputBgUrl" placeholder="https://.../anh-nen.jpg"
+                class="w-full px-2.5 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
             </div>
           </div>
           <div class="flex items-center gap-3 pt-1">
@@ -267,18 +308,21 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white/70 p-3 rounded-2xl border border-pink-100">
           <div>
             <label class="block font-semibold text-pink-900 mb-1">Tiêu đề cố định:</label>
-            <input type="text" id="inputTitleFixed" value="You're My" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputTitleFixed" value="You're My"
+              class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
           <div>
             <label class="block font-semibold text-pink-900 mb-1">Từ khóa luân phiên (cách nhau dấu phẩy):</label>
-            <input type="text" id="inputKeywords" value="Queen, Love, Sunshine" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputKeywords" value="Queen, Love, Sunshine"
+              class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
         </div>
 
         <!-- 5. LỜI CHÚC GÕ TỪNG KÝ TỰ -->
         <div class="bg-white/70 p-3 rounded-2xl border border-pink-100">
           <label class="block font-semibold text-pink-900 mb-1">Lời chúc 20/10 gõ từng chữ (mỗi dòng một câu):</label>
-          <textarea id="inputWishLines" rows="5" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 font-sans focus:outline-none focus:ring-2 focus:ring-pink-400 leading-relaxed">20.10.2023 Ngày Phụ Nữ Việt Nam
+          <textarea id="inputWishLines" rows="5"
+            class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 font-sans focus:outline-none focus:ring-2 focus:ring-pink-400 leading-relaxed">20.10.2023 Ngày Phụ Nữ Việt Nam
 Chúc cho bà, mẹ, chị em phụ nữ
 Luôn xinh đẹp, mạnh khoẻ và hạnh phúc
 Chúc cho những người con gái
@@ -292,34 +336,44 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <span class="text-[11px] text-pink-700 block mb-0.5">Tiêu đề mở đầu thiệp:</span>
-              <input type="text" id="inputCardTitle" value="Thân gửi người phụ nữ tuyệt vời nhất!" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+              <input type="text" id="inputCardTitle" value="Thân gửi người phụ nữ tuyệt vời nhất!"
+                class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
             </div>
             <div>
               <span class="text-[11px] text-pink-700 block mb-0.5">Tên người gửi (Ký tên cuối thiệp):</span>
-              <input type="text" id="inputSenderName" value="You're always my Sunshine, my Love &amp; my Queen!" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+              <input type="text" id="inputSenderName" value="You're always my Sunshine, my Love &amp; my Queen!"
+                class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
             </div>
           </div>
           <div>
             <span class="text-[11px] text-pink-700 block mb-0.5">Câu mở đầu trong thiệp:</span>
-            <input type="text" id="inputCardIntro" value="Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất." class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <input type="text" id="inputCardIntro"
+              value="Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất."
+              class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
           <div>
             <span class="text-[11px] text-pink-700 block mb-0.5">Lời nhắn tâm tình (in nghiêng):</span>
-            <textarea id="inputCardLetter" rows="3" class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400 leading-relaxed">Mong bạn mỗi ngày đều nở nụ cười rạng rỡ như đóa hồng ban mai, luôn luôn tự tin, kiêu hãnh và được yêu thương chở che đúng như cách một Nữ Hoàng xứng đáng!</textarea>
+            <textarea id="inputCardLetter" rows="3"
+              class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400 leading-relaxed">Mong bạn mỗi ngày đều nở nụ cười rạng rỡ như đóa hồng ban mai, luôn luôn tự tin, kiêu hãnh và được yêu thương chở che đúng như cách một Nữ Hoàng xứng đáng!</textarea>
           </div>
         </div>
 
         <!-- 7. ÂM NHẠC TÙY CHỈNH -->
         <div class="bg-white/80 p-3.5 rounded-2xl border border-pink-200 space-y-2.5">
           <div class="flex items-center justify-between">
-            <label class="block font-bold text-pink-900">🎵 Nhạc nền / Đoạn nhạc tự edit / Ghi âm lời chúc (Tự động phát):</label>
-            <button type="button" id="clearMusicBtn" class="text-[10px] text-rose-600 hover:text-rose-800 underline font-semibold">Xóa nhạc</button>
+            <label class="block font-bold text-pink-900">🎵 Nhạc nền / Đoạn nhạc tự edit / Ghi âm lời chúc (Tự động
+              phát):</label>
+            <button type="button" id="clearMusicBtn"
+              class="text-[10px] text-rose-600 hover:text-rose-800 underline font-semibold">Xóa nhạc</button>
           </div>
 
           <!-- Cách 1: Dán link YouTube hoặc MP3 -->
           <div>
-            <span class="text-[11px] text-pink-700 block mb-0.5">Cách 1: Dán link YouTube hoặc link file .mp3 online:</span>
-            <input type="url" id="inputMusicShareUrl" placeholder="Dán link YouTube (https://youtu.be/...) hoặc link .mp3 vào đây" class="w-full px-3 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <span class="text-[11px] text-pink-700 block mb-0.5">Cách 1: Dán link YouTube hoặc link file .mp3
+              online:</span>
+            <input type="url" id="inputMusicShareUrl"
+              placeholder="Dán link YouTube (https://youtu.be/...) hoặc link .mp3 vào đây"
+              class="w-full px-3 py-1.5 rounded-xl bg-pink-50/50 border border-pink-200 text-pink-950 focus:outline-none focus:ring-2 focus:ring-pink-400">
           </div>
 
           <!-- Cách 2 & 3 -->
@@ -327,23 +381,30 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
             <!-- Upload file MP3 -->
             <div class="bg-pink-50/60 p-2.5 rounded-xl border border-pink-200/80 flex flex-col justify-between">
               <div>
-                <span class="text-[11px] font-semibold text-pink-900 block mb-0.5">📁 Cách 2: Tải file nhạc tự edit (.mp3, .m4a, .wav)</span>
-                <span class="text-[10px] text-pink-600 block mb-1.5">Khuyên dùng đoạn nhạc đã cắt gọn (&lt; 2MB) để đóng gói mượt vào link tặng:</span>
+                <span class="text-[11px] font-semibold text-pink-900 block mb-0.5">📁 Cách 2: Tải file nhạc tự edit
+                  (.mp3, .m4a, .wav)</span>
+                <span class="text-[10px] text-pink-600 block mb-1.5">Khuyên dùng đoạn nhạc đã cắt gọn (&lt; 2MB) để đóng
+                  gói mượt vào link tặng:</span>
               </div>
-              <input type="file" id="musicFileInput" accept="audio/*" class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-700 cursor-pointer">
+              <input type="file" id="musicFileInput" accept="audio/*"
+                class="w-full text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-700 cursor-pointer">
             </div>
 
             <!-- Ghi âm trực tiếp -->
             <div class="bg-pink-50/60 p-2.5 rounded-xl border border-pink-200/80 flex flex-col justify-between">
               <div>
-                <span class="text-[11px] font-semibold text-pink-900 block mb-0.5">🎙️ Cách 3: Ghi âm lời chúc / Hát tặng trực tiếp</span>
-                <span id="recordStatusText" class="text-[10px] text-pink-600 block mb-1.5">Bấm nút bên dưới để bắt đầu thu âm qua Micro:</span>
+                <span class="text-[11px] font-semibold text-pink-900 block mb-0.5">🎙️ Cách 3: Ghi âm lời chúc / Hát
+                  tặng trực tiếp</span>
+                <span id="recordStatusText" class="text-[10px] text-pink-600 block mb-1.5">Bấm nút bên dưới để bắt đầu
+                  thu âm qua Micro:</span>
               </div>
               <div class="flex items-center gap-2">
-                <button type="button" id="startRecordBtn" class="flex-1 py-1.5 px-3 rounded-lg bg-rose-500 hover:bg-rose-600 text-white font-semibold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all active:scale-95">
+                <button type="button" id="startRecordBtn"
+                  class="flex-1 py-1.5 px-3 rounded-lg bg-rose-500 hover:bg-rose-600 text-white font-semibold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all active:scale-95">
                   <span>🔴 Bắt đầu ghi âm</span>
                 </button>
-                <button type="button" id="stopRecordBtn" class="hidden flex-1 py-1.5 px-3 rounded-lg bg-gray-800 hover:bg-gray-900 text-white font-semibold text-[11px] items-center justify-center gap-1 shadow-xs animate-pulse transition-all active:scale-95">
+                <button type="button" id="stopRecordBtn"
+                  class="hidden flex-1 py-1.5 px-3 rounded-lg bg-gray-800 hover:bg-gray-900 text-white font-semibold text-[11px] items-center justify-center gap-1 shadow-xs animate-pulse transition-all active:scale-95">
                   <span>⏹️ Dừng lưu (<span id="recordTimer">00:00</span>)</span>
                 </button>
               </div>
@@ -351,26 +412,31 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
           </div>
 
           <!-- Trình nghe thử -->
-          <div id="customAudioPreviewBox" class="hidden items-center justify-between bg-emerald-50/90 border border-emerald-200 px-3 py-2 rounded-xl">
+          <div id="customAudioPreviewBox"
+            class="hidden items-center justify-between bg-emerald-50/90 border border-emerald-200 px-3 py-2 rounded-xl">
             <div class="flex items-center gap-2 min-w-0 pr-2">
               <span class="text-base">🎶</span>
-              <span id="customAudioName" class="text-[11px] font-semibold text-emerald-900 truncate">Đoạn âm thanh đã sẵn sàng</span>
+              <span id="customAudioName" class="text-[11px] font-semibold text-emerald-900 truncate">Đoạn âm thanh đã
+                sẵn sàng</span>
             </div>
             <audio id="editorAudioPreview" controls class="h-7 max-w-[180px] sm:max-w-[220px]"></audio>
           </div>
 
-          <p class="text-[10px] text-pink-600 italic">💡 Âm nhạc / bản ghi âm sẽ tự động phát lặp lại khi người nhận mở thiệp hoặc chạm mở hộp quà!</p>
+          <p class="text-[10px] text-pink-600 italic">💡 Âm nhạc / bản ghi âm sẽ tự động phát lặp lại khi người nhận mở
+            thiệp hoặc chạm mở hộp quà!</p>
         </div>
 
       </div>
 
       <!-- Nút điều khiển -->
       <div class="mt-3 pt-3 border-t border-pink-100 flex flex-wrap gap-2 justify-end items-center">
-        <button id="applyPreviewBtn" class="px-3.5 py-2 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs font-semibold transition-all active:scale-95">
+        <button id="applyPreviewBtn"
+          class="px-3.5 py-2 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs font-semibold transition-all active:scale-95">
           Xem trước
         </button>
-        <button id="generateShareLinkBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-1.5">
-          <span>📋 Sao chép link tặng (Chỉ có thiệp &amp; hiệu ứng)</span>
+        <button id="generateShareLinkBtn"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-1.5">
+          <span>📋 Sao chép link tặng </span>
         </button>
       </div>
 
@@ -380,22 +446,27 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
   <!-- ============================================================
        MODAL: THIỆP CHÚC MỪNG TRONG HỘP QUÀ
        ============================================================ -->
-  <div id="cardOverlay" class="fixed inset-0 bg-pink-950/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 custom-modal">
-    <div class="relative w-full max-w-xl bg-gradient-to-br from-white via-pink-50/95 to-rose-100/95 rounded-3xl p-4 sm:p-7 shadow-[0_20px_50px_rgba(157,23,77,0.35)] border-2 border-white/90 overflow-hidden text-center max-h-[92vh] max-h-[92dvh] overflow-y-auto no-scrollbar">
+  <div id="cardOverlay"
+    class="fixed inset-0 bg-pink-950/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 custom-modal">
+    <div
+      class="relative w-full max-w-xl bg-gradient-to-br from-white via-pink-50/95 to-rose-100/95 rounded-3xl p-4 sm:p-7 shadow-[0_20px_50px_rgba(157,23,77,0.35)] border-2 border-white/90 overflow-hidden text-center max-h-[92vh] max-h-[92dvh] overflow-y-auto no-scrollbar">
 
-      <button id="closeCardBtn" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-pink-100 hover:bg-pink-200 text-pink-800 transition-colors z-20">
+      <button id="closeCardBtn"
+        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-pink-100 hover:bg-pink-200 text-pink-800 transition-colors z-20">
         <svg class="w-4 h-4 stroke-current" stroke-width="2.5" fill="none" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
       <div class="text-3xl sm:text-4xl mb-1">💐</div>
-      <h3 id="cardRecipientHeader" class="cursive-font text-3xl sm:text-4xl text-rose-700 mb-1">Thân gửi người phụ nữ tuyệt vời nhất!</h3>
+      <h3 id="cardRecipientHeader" class="cursive-font text-3xl sm:text-4xl text-rose-700 mb-1">Thân gửi người phụ nữ
+        tuyệt vời nhất!</h3>
       <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-rose-400 to-transparent mx-auto my-2"></div>
 
       <!-- ALBUM ẢNH TRƯỢT CUỘN FILM TỰ ĐỘNG -->
       <div id="albumGallerySection" class="hidden my-2">
-        <p class="text-[11px] text-pink-600 italic mb-1">🎞️ Thước phim kỷ niệm tự động trôi • Chạm vào ảnh để tạm dừng hoặc phóng to</p>
+        <p class="text-[11px] text-pink-600 italic mb-1">🎞️ Thước phim kỷ niệm tự động trôi • Chạm vào ảnh để tạm dừng
+          hoặc phóng to</p>
         <div id="filmstripViewport" class="filmstrip-viewport">
           <div id="filmstripTrack" class="filmstrip-track"></div>
         </div>
@@ -407,7 +478,8 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
           Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.
         </p>
         <p id="cardLetterContent" class="italic text-rose-800 font-serif leading-relaxed">
-          "Mong bạn mỗi ngày đều nở nụ cười rạng rỡ như đóa hồng ban mai, luôn luôn tự tin, kiêu hãnh và được yêu thương chở che đúng như cách một Nữ Hoàng xứng đáng!"
+          "Mong bạn mỗi ngày đều nở nụ cười rạng rỡ như đóa hồng ban mai, luôn luôn tự tin, kiêu hãnh và được yêu thương
+          chở che đúng như cách một Nữ Hoàng xứng đáng!"
         </p>
         <p id="cardSenderFooter" class="font-medium text-pink-900 pt-1 text-center text-sm sm:text-base">
           💖 You're always my Sunshine, my Love &amp; my Queen! 💖
@@ -415,7 +487,8 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
       </div>
 
       <div class="mt-4 flex justify-center">
-        <button id="celebrateAgainBtn" class="px-5 py-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-medium text-xs sm:text-sm tracking-wider shadow-md hover:from-pink-600 hover:to-rose-700 transition-all active:scale-95">
+        <button id="celebrateAgainBtn"
+          class="px-5 py-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-medium text-xs sm:text-sm tracking-wider shadow-md hover:from-pink-600 hover:to-rose-700 transition-all active:scale-95">
           Tung thêm pháo hoa &amp; tim ✨
         </button>
       </div>
@@ -423,12 +496,17 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
   </div>
 
   <!-- LIGHTBOX PHÓNG TO ẢNH -->
-  <div id="lightboxOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-3 sm:p-5 custom-modal">
-    <button id="closeLightboxBtn" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white transition-all text-xl font-bold">✕</button>
+  <div id="lightboxOverlay"
+    class="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-3 sm:p-5 custom-modal">
+    <button id="closeLightboxBtn"
+      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white transition-all text-xl font-bold">✕</button>
     <div class="relative max-w-xl w-full max-h-[88vh] flex flex-col items-center">
-      <div class="p-3 sm:p-4 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 max-w-full flex flex-col items-center">
-        <img id="lightboxImg" src="" alt="Phóng to ảnh" class="max-h-[64vh] w-auto max-w-full rounded-xl object-contain shadow-sm">
-        <div id="lightboxCaption" class="handwriting-font text-center text-rose-900 text-lg sm:text-2xl pt-3 px-3 max-w-md leading-snug break-words">
+      <div
+        class="p-3 sm:p-4 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 max-w-full flex flex-col items-center">
+        <img id="lightboxImg" src="" alt="Phóng to ảnh"
+          class="max-h-[64vh] w-auto max-w-full rounded-xl object-contain shadow-sm">
+        <div id="lightboxCaption"
+          class="handwriting-font text-center text-rose-900 text-lg sm:text-2xl pt-3 px-3 max-w-md leading-snug break-words">
           Khoảnh khắc tuyệt vời ✨
         </div>
       </div>
@@ -437,7 +515,8 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
   </div>
 
   <!-- TOAST THÔNG BÁO -->
-  <div id="toastMsg" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-pink-900 text-white text-xs sm:text-sm px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none opacity-0">
+  <div id="toastMsg"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-pink-900 text-white text-xs sm:text-sm px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none opacity-0">
     <svg class="w-4 h-4 text-emerald-300 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
     </svg>
@@ -445,11 +524,13 @@ Tìm được người mình yêu và cũng yêu thương mình &lt;3</textarea>
   </div>
 
   <!-- FOOTER -->
-  <footer id="footerText" class="w-full text-center text-pink-800/80 font-medium text-[11px] sm:text-xs z-10 drop-shadow-xs">
+  <footer id="footerText"
+    class="w-full text-center text-pink-800/80 font-medium text-[11px] sm:text-xs z-10 drop-shadow-xs">
     Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam
   </footer>
 
   <!-- JavaScript riêng -->
   <script src="script.js"></script>
 </body>
+
 </html>

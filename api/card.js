@@ -84,7 +84,7 @@ module.exports = (req, res) => {
         const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
         image = toOgImage(first) || toOgImage(cfg.bgUrl);
         if (image) imageIsCrop = true;
-        pageUrl = host ? `https://${host}/?c=${token}` : '';
+        pageUrl = host ? `https://${host}/t?c=${token}` : '';
       } catch (e) {
         console.error('card decode error:', e); // token hỏng -> coi như link trần
       }
@@ -97,6 +97,8 @@ module.exports = (req, res) => {
         .replace(/<meta\s+(?:property|name)="(?:og:|twitter:|description)[^"]*"[^>]*>\s*/gi, '')
         .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
     }
+    // dọn thẻ ảnh/url/twitter có sẵn trong index.html để không bị trùng
+    html = html.replace(/<meta\s+(?:property|name)="(?:og:image|og:url|twitter:)[^"]*"[^>]*>\s*/gi, '');
     const tags = [
       hasCard && `<meta name="description" content="${esc(desc)}">`,
       hasCard && `<meta property="og:type" content="website">`,

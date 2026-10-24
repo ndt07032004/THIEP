@@ -1137,10 +1137,10 @@ if (openEditorModalBtn) {
     collectCurrentSettings();
     applyConfigToDom();
     const token = encodeConfigToHash(appConfig);
-    const base  = window.location.origin.startsWith('http')
-      ? window.location.origin + '/'
-      : window.location.href.split(/[?#]/)[0];
-    const fullShareUrl = base + '?c=' + token;
+    // Dùng đường dẫn /t (không có file tĩnh) để Vercel chạy hàm tạo preview cho Zalo/Messenger
+    const fullShareUrl = window.location.origin.startsWith('http')
+      ? window.location.origin + '/t?c=' + token
+      : window.location.href.split(/[?#]/)[0] + '?c=' + token;
 
     navigator.clipboard.writeText(fullShareUrl).then(() => {
       editorModalOverlay.classList.remove('active');

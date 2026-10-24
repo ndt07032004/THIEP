@@ -904,7 +904,7 @@ if (openEditorModalBtn) {
     const files = Array.from(this.files || []);
     if (files.length === 0) return;
     
-    showToast(`Đang tải ${files.length} ảnh lên mây Cloudinary... ☁️`);
+    showToast(`Đang tải ${files.length} ảnh lên... ☁️`);
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       try {
@@ -912,12 +912,12 @@ if (openEditorModalBtn) {
         if (!appConfig.photos) appConfig.photos = [];
         appConfig.photos.push({ url: secureUrl, caption: file.name.replace(/\.[^/.]+$/, "") });
       } catch (err) {
-        showToast("Lỗi tải ảnh lên Cloudinary!");
+        showToast("Lỗi tải ảnh !");
       }
     }
     this.value = '';
     renderEditorThumbnailList();
-    showToast("✓ Đã tải ảnh lên mây thành công! ✨");
+    showToast("✓ Đã tải ảnh thành công! ✨");
   });
 
   document.getElementById('inputPhotosUrls').addEventListener('change', function() {

@@ -54,34 +54,48 @@ module.exports = (req, res) => {
   try {
     const u = new URL(req.url, 'http://localhost');
     const token = u.searchParams.get('c') || '';
-    if (token && token.length < 30000) {
-      const cfg = decodeToken(token);
-      const title = clip(cfg.cardTitle || cfg.pageTitle || "Chúc Mừng 20/10", 90);
-      const desc = clip(cfg.cardIntro || cfg.sender || 'Một tấm thiệp nhỏ gửi tới bạn 💗', 200);
-      const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
-      const image = toOgImage(first) || toOgImage(cfg.bgUrl) || FALLBACK_IMAGE;
-      const host = req.headers['x-forwarded-host'] || req.headers.host || '';
-      const pageUrl = host ? `https://${host}/?c=${token}` : '';
+    const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+    // Ảnh mặc định: biến môi trường DEFAULT_OG_IMAGE > file og-default.jpg trong repo
+    const defaultImage = FALLBACK_IMAGE || (host ? `https://${host}/og-default.jpg` : '');
 
+    let title = '', desc = '', image = '', pageUrl = host ? `https://${host}/` : '';
+    let hasCard = false;
+
+    if (token && token.length < 30000) {
+      try {
+        const cfg = decodeToken(token);
+        hasCard = true;
+        title = clip(cfg.cardTitle || cfg.pageTitle || "Chúc Mừng 20/10", 90);
+        desc = clip(cfg.cardIntro || cfg.sender || 'Một tấm thiệp nhỏ gửi tới bạn 💗', 200);
+        const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
+        image = toOgImage(first) || toOgImage(cfg.bgUrl);
+        pageUrl = host ? `https://${host}/?c=${token}` : '';
+      } catch (e) {
+        console.error('card decode error:', e); // token hỏng -> coi như link trần
+      }
+    }
+    image = image || defaultImage;
+
+    if (hasCard) {
       // bỏ thẻ mặc định rồi chèn thẻ riêng của thiệp này
       html = html
         .replace(/<meta\s+(?:property|name)="(?:og:|twitter:|description)[^"]*"[^>]*>\s*/gi, '')
         .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
-      const tags = [
-        `<meta name="description" content="${esc(desc)}">`,
-        `<meta property="og:type" content="website">`,
-        `<meta property="og:title" content="${esc(title)}">`,
-        `<meta property="og:description" content="${esc(desc)}">`,
-        pageUrl && `<meta property="og:url" content="${esc(pageUrl)}">`,
-        image && `<meta property="og:image" content="${esc(image)}">`,
-        image && `<meta property="og:image:width" content="1200">`,
-        image && `<meta property="og:image:height" content="630">`,
-        `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
-      ].filter(Boolean).join('\n  ');
-      html = html.replace('</head>', `  ${tags}\n</head>`);
     }
+    const tags = [
+      hasCard && `<meta name="description" content="${esc(desc)}">`,
+      hasCard && `<meta property="og:type" content="website">`,
+      hasCard && `<meta property="og:title" content="${esc(title)}">`,
+      hasCard && `<meta property="og:description" content="${esc(desc)}">`,
+      pageUrl && `<meta property="og:url" content="${esc(pageUrl)}">`,
+      image && `<meta property="og:image" content="${esc(image)}">`,
+      image && `<meta property="og:image:width" content="1200">`,
+      image && `<meta property="og:image:height" content="630">`,
+      `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
+    ].filter(Boolean).join('\n  ');
+    html = html.replace('</head>', `  ${tags}\n</head>`);
   } catch (e) {
-    console.error('card decode error:', e); // lỗi thì vẫn trả trang mặc định
+    console.error('card error:', e); // lỗi gì cũng vẫn trả trang bình thường
   }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');

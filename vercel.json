@@ -3,6 +3,6 @@
     "api/card.js": { "includeFiles": "index.html" }
   },
   "rewrites": [
-    { "source": "/", "has": [{ "type": "query", "key": "c" }], "destination": "/api/card" }
+    { "source": "/", "destination": "/api/card" }
   ]
 }

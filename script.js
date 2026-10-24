@@ -1144,7 +1144,7 @@ if (openEditorModalBtn) {
 
     navigator.clipboard.writeText(fullShareUrl).then(() => {
       editorModalOverlay.classList.remove('active');
-      showToast("✨ Đã sao chép link tặng siêu gọn vào bộ nhớ tạm!");
+      showToast(" Đã sao chép link vào bộ nhớ tạm!");
     }).catch(() => {
       prompt("Sao chép đường link này:", fullShareUrl);
     });

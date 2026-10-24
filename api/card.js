@@ -36,12 +36,6 @@ function decodeToken(token) {
   for (const k in compact) if (KEY_MAP_REV[k]) cfg[KEY_MAP_REV[k]] = compact[k];
   return cfg;
 }
-// Ảnh xem trước: JPG (Zalo/FB không ưa avif/webp), tỉ lệ 1.91:1, cắt theo chủ thể
-function toOgImage(u) {
-  u = expandUrl(u);
-  if (!u) return '';
-  return u.replace('/upload/f_auto,q_auto,w_1200/', '/upload/f_jpg,q_auto,w_1200,h_630,c_fill,g_auto/');
-}
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s);
 
@@ -51,7 +45,40 @@ function getHtml() {
   return htmlCache;
 }
 
-module.exports = (req, res) => {
+// Kiểm tra ảnh có thật sự tải được (bot của Zalo/Messenger cũng tải y như vậy).
+// Ảnh lỗi/bị chặn sẽ hiện thành khung trắng trong preview, nên lỗi thì bỏ qua, dùng ảnh khác.
+async function imageOk(u) {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2500);
+    const r = await fetch(u, {
+      headers: { Range: 'bytes=0-0', 'User-Agent': 'facebookexternalhit/1.1' },
+      signal: ctrl.signal,
+      redirect: 'follow'
+    });
+    clearTimeout(timer);
+    try { await r.body.cancel(); } catch (_) {}
+    return (r.status === 200 || r.status === 206) && /^image\//i.test(r.headers.get('content-type') || '');
+  } catch (_) {
+    return false;
+  }
+}
+// Thử song song, lấy ứng viên đầu tiên (theo thứ tự ưu tiên) tải được
+async function pickImage(cands) {
+  cands = [...new Set(cands.filter(Boolean))];
+  const ok = await Promise.all(cands.map(imageOk));
+  const i = ok.findIndex(Boolean);
+  return i >= 0 ? cands[i] : '';
+}
+// Với ảnh Cloudinary: ưu tiên bản JPG (Zalo/Messenger đọc tốt nhất), vẫn giữ link gốc làm dự phòng
+function ogCandidates(u) {
+  u = expandUrl(u);
+  if (!u) return [];
+  const jpg = u.replace('/upload/f_auto,', '/upload/f_jpg,');
+  return jpg !== u ? [jpg, u] : [u];
+}
+
+module.exports = async (req, res) => {
   let html = getHtml();
   try {
     const u = new URL(req.url, 'http://localhost');
@@ -61,7 +88,7 @@ module.exports = (req, res) => {
     const defaultImage = FALLBACK_IMAGE || (host ? `https://${host}/og-default.jpg` : '');
 
     let title = '', desc = '', image = '', pageUrl = host ? `https://${host}/` : '';
-    let hasCard = false, imageIsCrop = false;
+    let hasCard = false, candidates = [];
 
     if (token && token.length < 30000) {
       try {
@@ -82,14 +109,13 @@ module.exports = (req, res) => {
         );
 
         const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
-        image = toOgImage(first) || toOgImage(cfg.bgUrl);
-        if (image) imageIsCrop = true;
+        candidates = [...ogCandidates(first), ...ogCandidates(cfg.bgUrl)];
         pageUrl = host ? `https://${host}/t?c=${token}` : '';
       } catch (e) {
         console.error('card decode error:', e); // token hỏng -> coi như link trần
       }
     }
-    image = image || defaultImage;
+    image = (await pickImage(candidates)) || defaultImage;
 
     if (hasCard) {
       // bỏ thẻ mặc định rồi chèn thẻ riêng của thiệp này
@@ -106,8 +132,6 @@ module.exports = (req, res) => {
       hasCard && `<meta property="og:description" content="${esc(desc)}">`,
       pageUrl && `<meta property="og:url" content="${esc(pageUrl)}">`,
       image && `<meta property="og:image" content="${esc(image)}">`,
-      imageIsCrop && `<meta property="og:image:width" content="1200">`,
-      imageIsCrop && `<meta property="og:image:height" content="630">`,
       `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
     ].filter(Boolean).join('\n  ');
     html = html.replace('</head>', `  ${tags}\n</head>`);

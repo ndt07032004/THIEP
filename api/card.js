@@ -1,0 +1,89 @@
+// Vercel Serverless Function: trả index.html kèm thẻ Open Graph riêng cho từng thiệp.
+// Bot của Zalo/Messenger đọc og:image + og:title ở đây; trình duyệt thật vẫn chạy script.js như bình thường.
+const fs = require('fs');
+const path = require('path');
+const LZString = require('../lib/lz-string.js');
+
+const CLOUD = 'dq4xqmsrh'; // phải trùng CLOUDINARY_CLOUD_NAME trong script.js
+const CLD = `https://res.cloudinary.com/${CLOUD}/`;
+const URL_PREFIXES = [
+  CLD + 'image/upload/f_auto,q_auto,w_1200/',
+  CLD + 'video/upload/f_auto,q_auto,w_1200/',
+  CLD + 'raw/upload/f_auto,q_auto,w_1200/',
+  CLD + 'image/upload/',
+  CLD + 'video/upload/'
+];
+const KEY_MAP_REV = {
+  a: 'pageTitle', b: 'badgeText', c: 'footerText', d: 'fallEffect',
+  e: 'titleFixed', f: 'keywords', g: 'wishLines', h: 'cardTitle',
+  i: 'cardIntro', j: 'sender', k: 'letter', l: 'bgUrl',
+  m: 'bgOpacity', n: 'photos', o: 'musicUrl', p: 'musicLabel'
+};
+// Ảnh dự phòng khi thiệp không có ảnh nào (tuỳ chọn, đặt trong Vercel > Settings > Environment Variables)
+const FALLBACK_IMAGE = process.env.DEFAULT_OG_IMAGE || '';
+
+function expandUrl(u) {
+  if (typeof u !== 'string') return '';
+  const m = u.match(/^~(\d+)\|(.*)$/);
+  return m && URL_PREFIXES[+m[1]] ? URL_PREFIXES[+m[1]] + m[2] : u;
+}
+function decodeToken(token) {
+  const bytes = new Uint8Array(Buffer.from(token.replace(/-/g, '+').replace(/_/g, '/'), 'base64'));
+  const compact = JSON.parse(LZString.decompressFromUint8Array(bytes));
+  const cfg = {};
+  for (const k in compact) if (KEY_MAP_REV[k]) cfg[KEY_MAP_REV[k]] = compact[k];
+  return cfg;
+}
+// Ảnh xem trước: JPG (Zalo/FB không ưa avif/webp), tỉ lệ 1.91:1, cắt theo chủ thể
+function toOgImage(u) {
+  u = expandUrl(u);
+  if (!u) return '';
+  return u.replace('/upload/f_auto,q_auto,w_1200/', '/upload/f_jpg,q_auto,w_1200,h_630,c_fill,g_auto/');
+}
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const clip = (s, n) => (s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s);
+
+let htmlCache = null;
+function getHtml() {
+  if (!htmlCache) htmlCache = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  return htmlCache;
+}
+
+module.exports = (req, res) => {
+  let html = getHtml();
+  try {
+    const u = new URL(req.url, 'http://localhost');
+    const token = u.searchParams.get('c') || '';
+    if (token && token.length < 30000) {
+      const cfg = decodeToken(token);
+      const title = clip(cfg.cardTitle || cfg.pageTitle || "Chúc Mừng 20/10", 90);
+      const desc = clip(cfg.cardIntro || cfg.sender || 'Một tấm thiệp nhỏ gửi tới bạn 💗', 200);
+      const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
+      const image = toOgImage(first) || toOgImage(cfg.bgUrl) || FALLBACK_IMAGE;
+      const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+      const pageUrl = host ? `https://${host}/?c=${token}` : '';
+
+      // bỏ thẻ mặc định rồi chèn thẻ riêng của thiệp này
+      html = html
+        .replace(/<meta\s+(?:property|name)="(?:og:|twitter:|description)[^"]*"[^>]*>\s*/gi, '')
+        .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`);
+      const tags = [
+        `<meta name="description" content="${esc(desc)}">`,
+        `<meta property="og:type" content="website">`,
+        `<meta property="og:title" content="${esc(title)}">`,
+        `<meta property="og:description" content="${esc(desc)}">`,
+        pageUrl && `<meta property="og:url" content="${esc(pageUrl)}">`,
+        image && `<meta property="og:image" content="${esc(image)}">`,
+        image && `<meta property="og:image:width" content="1200">`,
+        image && `<meta property="og:image:height" content="630">`,
+        `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
+      ].filter(Boolean).join('\n  ');
+      html = html.replace('</head>', `  ${tags}\n</head>`);
+    }
+  } catch (e) {
+    console.error('card decode error:', e); // lỗi thì vẫn trả trang mặc định
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  res.status(200).send(html);
+};

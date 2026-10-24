@@ -139,7 +139,7 @@ function encodeConfigToHash(cfg) {
       compact[KEY_MAP[key]] = val;
     }
     const bytes = LZString.compressToUint8Array(JSON.stringify(compact));
-    return `#c=${toBase64Url(bytes)}`;
+    return toBase64Url(bytes);
   } catch (e) {
     console.error("Lỗi encode Hash:", e);
     return "";
@@ -155,7 +155,7 @@ function decodeHashToConfig(hashStr) {
       return Object.assign({}, DEFAULT_CONFIG, JSON.parse(jsonStr));
     }
     // Link mới (#c=...)
-    const bytes = fromBase64Url(hashStr.replace("#c=", ""));
+    const bytes = fromBase64Url(hashStr.replace(/^#?c=/, ""));
     const compact = JSON.parse(LZString.decompressFromUint8Array(bytes));
     const cfg = {};
     for (const k in compact) {
@@ -177,16 +177,19 @@ function decodeHashToConfig(hashStr) {
 }
 
 function checkURLMode() {
-  const hash = window.location.hash;
-  if (hash && (hash.startsWith('#c=') || hash.startsWith('#card='))) {
-    const parsed = decodeHashToConfig(hash);
-    if (parsed) {
-      appConfig = parsed;
-      if (parsed.secretImg && (!appConfig.photos || appConfig.photos.length === 0)) {
-        appConfig.photos = [{ url: parsed.secretImg, caption: "Khoảnh khắc tuyệt đẹp ✨" }];
-      }
-      isRecipientMode = true;
+  let raw = new URLSearchParams(window.location.search).get('c');
+  if (!raw) {
+    const hash = window.location.hash;
+    if (hash && (hash.startsWith('#c=') || hash.startsWith('#card='))) raw = hash;
+  }
+  if (!raw) return;
+  const parsed = decodeHashToConfig(raw);
+  if (parsed) {
+    appConfig = parsed;
+    if (parsed.secretImg && (!appConfig.photos || appConfig.photos.length === 0)) {
+      appConfig.photos = [{ url: parsed.secretImg, caption: "Khoảnh khắc tuyệt đẹp ✨" }];
     }
+    isRecipientMode = true;
   }
 }
 checkURLMode();
@@ -1129,8 +1132,11 @@ if (openEditorModalBtn) {
     }
     collectCurrentSettings();
     applyConfigToDom();
-    const hashPayload  = encodeConfigToHash(appConfig);
-    const fullShareUrl = window.location.origin + window.location.pathname + hashPayload;
+    const token = encodeConfigToHash(appConfig);
+    const base  = window.location.origin.startsWith('http')
+      ? window.location.origin + '/'
+      : window.location.href.split(/[?#]/)[0];
+    const fullShareUrl = base + '?c=' + token;
 
     navigator.clipboard.writeText(fullShareUrl).then(() => {
       editorModalOverlay.classList.remove('active');

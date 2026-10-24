@@ -1,14 +1,19 @@
+/* lz-string 1.5.0 (c) pieroxy - MIT License */
+var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",e={};function t(r,o){if(!e[r]){e[r]={};for(var n=0;n<r.length;n++)e[r][r.charAt(n)]=n}return e[r][o]}var i={compressToBase64:function(r){if(null==r)return"";var n=i._compress(r,6,function(r){return o.charAt(r)});switch(n.length%4){default:case 0:return n;case 1:return n+"===";case 2:return n+"==";case 3:return n+"="}},decompressFromBase64:function(r){return null==r?"":""==r?null:i._decompress(r.length,32,function(n){return t(o,r.charAt(n))})},compressToUTF16:function(o){return null==o?"":i._compress(o,15,function(o){return r(o+32)})+" "},decompressFromUTF16:function(r){return null==r?"":""==r?null:i._decompress(r.length,16384,function(o){return r.charCodeAt(o)-32})},compressToUint8Array:function(r){for(var o=i.compress(r),n=new Uint8Array(2*o.length),e=0,t=o.length;e<t;e++){var s=o.charCodeAt(e);n[2*e]=s>>>8,n[2*e+1]=s%256}return n},decompressFromUint8Array:function(o){if(null==o)return i.decompress(o);for(var n=new Array(o.length/2),e=0,t=n.length;e<t;e++)n[e]=256*o[2*e]+o[2*e+1];var s=[];return n.forEach(function(o){s.push(r(o))}),i.decompress(s.join(""))},compressToEncodedURIComponent:function(r){return null==r?"":i._compress(r,6,function(r){return n.charAt(r)})},decompressFromEncodedURIComponent:function(r){return null==r?"":""==r?null:(r=r.replace(/ /g,"+"),i._decompress(r.length,32,function(o){return t(n,r.charAt(o))}))},compress:function(o){return i._compress(o,16,function(o){return r(o)})},_compress:function(r,o,n){if(null==r)return"";var e,t,i,s={},u={},a="",p="",c="",l=2,f=3,h=2,d=[],m=0,v=0;for(i=0;i<r.length;i+=1)if(a=r.charAt(i),Object.prototype.hasOwnProperty.call(s,a)||(s[a]=f++,u[a]=!0),p=c+a,Object.prototype.hasOwnProperty.call(s,p))c=p;else{if(Object.prototype.hasOwnProperty.call(u,c)){if(c.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==o-1?(v=0,d.push(n(m)),m=0):v++;for(t=c.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=c.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete u[c]}else for(t=s[c],e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++),s[p]=f++,c=String(a)}if(""!==c){if(Object.prototype.hasOwnProperty.call(u,c)){if(c.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==o-1?(v=0,d.push(n(m)),m=0):v++;for(t=c.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=c.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete u[c]}else for(t=s[c],e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++)}for(t=2,e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;for(;;){if(m<<=1,v==o-1){d.push(n(m));break}v++}return d.join("")},decompress:function(r){return null==r?"":""==r?null:i._decompress(r.length,32768,function(o){return r.charCodeAt(o)})},_decompress:function(o,n,e){var t,i,s,u,a,p,c,l=[],f=4,h=4,d=3,m="",v=[],g={val:e(0),position:n,index:1};for(t=0;t<3;t+=1)l[t]=t;for(s=0,a=Math.pow(2,2),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;switch(s){case 0:for(s=0,a=Math.pow(2,8),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;c=r(s);break;case 1:for(s=0,a=Math.pow(2,16),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;c=r(s);break;case 2:return""}for(l[3]=c,i=c,v.push(c);;){if(g.index>o)return"";for(s=0,a=Math.pow(2,d),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;switch(c=s){case 0:for(s=0,a=Math.pow(2,8),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;l[h++]=r(s),c=h-1,f--;break;case 1:for(s=0,a=Math.pow(2,16),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;l[h++]=r(s),c=h-1,f--;break;case 2:return v.join("")}if(0==f&&(f=Math.pow(2,d),d++),l[c])m=l[c];else{if(c!==h)return null;m=i+i.charAt(0)}v.push(m),l[h++]=i+m.charAt(0),i=m,0==--f&&(f=Math.pow(2,d),d++)}}};return i}();"function"==typeof define&&define.amd?define(function(){return LZString}):"undefined"!=typeof module&&null!=module?module.exports=LZString:"undefined"!=typeof angular&&null!=angular&&angular.module("LZString",[]).factory("LZString",function(){return LZString});
+
 /* ==========================================================
  * CHÚC MỪNG 20/10 - YOU'RE MY QUEEN (SCRIPT.JS)
- * Tối ưu hóa Cloudinary & Thu gọn Link siêu ngắn
+ * Đã tích hợp Cloudinary (dq4xqmsrh) & Khóa chống lỗi link tặng
  * ========================================================== */
 
 const CLOUDINARY_CLOUD_NAME = "dq4xqmsrh";
 const CLOUDINARY_UPLOAD_PRESET = "thiep2010";
 
-let isUploadingImage = false;
+let isUploadingImage = false; // Cờ kiểm tra trạng thái upload ảnh lên mây
 
-// Tải ảnh lên Cloudinary và trả về link ngắn gọn
+/**
+ * Tải ảnh trực tiếp lên Cloudinary (Unsigned Upload)
+ */
 async function uploadImageToCloudinary(file) {
   isUploadingImage = true;
   const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -27,7 +32,7 @@ async function uploadImageToCloudinary(file) {
     const data = await response.json();
     let optimizedUrl = data.secure_url;
     if (optimizedUrl.includes("/upload/")) {
-      optimizedUrl = optimizedUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1000/");
+      optimizedUrl = optimizedUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1200/");
     }
     isUploadingImage = false;
     return optimizedUrl;
@@ -66,18 +71,75 @@ const DEFAULT_CONFIG = {
 let appConfig = { ...DEFAULT_CONFIG };
 let isRecipientMode = false;
 
-// Thu gọn cấu hình vào Hash bằng cách chỉ lưu phần thay đổi (Delta) để link siêu ngắn
+/* ----------------------------------------------------------
+ * NÉN LINK TẶNG: rút gọn tên trường + bỏ giá trị mặc định
+ * + rút gọn link Cloudinary + nén LZ + base64url.
+ * Link cũ dạng #card=... vẫn đọc được bình thường.
+ * ---------------------------------------------------------- */
+const CLD = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/`;
+const URL_PREFIXES = [
+  CLD + "image/upload/f_auto,q_auto,w_1200/",
+  CLD + "video/upload/f_auto,q_auto,w_1200/",
+  CLD + "raw/upload/f_auto,q_auto,w_1200/",
+  CLD + "image/upload/",
+  CLD + "video/upload/"
+];
+
+function shortenUrl(u) {
+  if (typeof u !== 'string') return u;
+  for (let i = 0; i < URL_PREFIXES.length; i++) {
+    if (u.startsWith(URL_PREFIXES[i])) return `~${i}|${u.slice(URL_PREFIXES[i].length)}`;
+  }
+  return u;
+}
+function expandUrl(u) {
+  if (typeof u !== 'string') return u;
+  const m = u.match(/^~(\d+)\|(.*)$/);
+  return (m && URL_PREFIXES[+m[1]]) ? URL_PREFIXES[+m[1]] + m[2] : u;
+}
+
+// tên đầy đủ -> tên ngắn
+const KEY_MAP = {
+  pageTitle: 'a', badgeText: 'b', footerText: 'c', fallEffect: 'd',
+  titleFixed: 'e', keywords: 'f', wishLines: 'g', cardTitle: 'h',
+  cardIntro: 'i', sender: 'j', letter: 'k', bgUrl: 'l',
+  bgOpacity: 'm', photos: 'n', musicUrl: 'o', musicLabel: 'p'
+};
+const KEY_MAP_REV = Object.fromEntries(Object.entries(KEY_MAP).map(([k, v]) => [v, k]));
+
+function toBase64Url(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function fromBase64Url(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const bin = atob(str);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
 function encodeConfigToHash(cfg) {
   try {
-    const delta = {};
-    for (const key in cfg) {
-      if (JSON.stringify(cfg[key]) !== JSON.stringify(DEFAULT_CONFIG[key])) {
-        delta[key] = cfg[key];
+    const compact = {};
+    for (const key in KEY_MAP) {
+      let val = cfg[key];
+      if (val === undefined || val === null || val === '') continue;
+      if (Array.isArray(val) && val.length === 0) continue;
+      // Bỏ qua nếu giống mặc định
+      if (JSON.stringify(val) === JSON.stringify(DEFAULT_CONFIG[key])) continue;
+
+      if (key === 'photos') {
+        val = val.map(p => p.caption ? [shortenUrl(p.url), p.caption] : [shortenUrl(p.url)]);
+      } else if (key === 'bgUrl' || key === 'musicUrl') {
+        val = shortenUrl(val);
       }
+      compact[KEY_MAP[key]] = val;
     }
-    const jsonStr = JSON.stringify(delta);
-    const compressed = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-    return `#card=${compressed}`;
+    const bytes = LZString.compressToUint8Array(JSON.stringify(compact));
+    return `#c=${toBase64Url(bytes)}`;
   } catch (e) {
     console.error("Lỗi encode Hash:", e);
     return "";
@@ -86,10 +148,28 @@ function encodeConfigToHash(cfg) {
 
 function decodeHashToConfig(hashStr) {
   try {
-    const base64Str = hashStr.replace("#card=", "");
-    const jsonStr = decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    const delta = JSON.parse(jsonStr);
-    return Object.assign({}, DEFAULT_CONFIG, delta);
+    // Link cũ (#card=...) -> giữ tương thích ngược
+    if (hashStr.startsWith('#card=')) {
+      const base64Str = hashStr.replace("#card=", "");
+      const jsonStr = decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      return Object.assign({}, DEFAULT_CONFIG, JSON.parse(jsonStr));
+    }
+    // Link mới (#c=...)
+    const bytes = fromBase64Url(hashStr.replace("#c=", ""));
+    const compact = JSON.parse(LZString.decompressFromUint8Array(bytes));
+    const cfg = {};
+    for (const k in compact) {
+      const key = KEY_MAP_REV[k];
+      if (!key) continue;
+      let val = compact[k];
+      if (key === 'photos') {
+        val = val.map(p => ({ url: expandUrl(p[0]), caption: p[1] || '' }));
+      } else if (key === 'bgUrl' || key === 'musicUrl') {
+        val = expandUrl(val);
+      }
+      cfg[key] = val;
+    }
+    return Object.assign({}, DEFAULT_CONFIG, cfg);
   } catch (e) {
     console.error("Lỗi decode Hash:", e);
     return null;
@@ -98,10 +178,13 @@ function decodeHashToConfig(hashStr) {
 
 function checkURLMode() {
   const hash = window.location.hash;
-  if (hash && hash.startsWith('#card=')) {
+  if (hash && (hash.startsWith('#c=') || hash.startsWith('#card='))) {
     const parsed = decodeHashToConfig(hash);
     if (parsed) {
       appConfig = parsed;
+      if (parsed.secretImg && (!appConfig.photos || appConfig.photos.length === 0)) {
+        appConfig.photos = [{ url: parsed.secretImg, caption: "Khoảnh khắc tuyệt đẹp ✨" }];
+      }
       isRecipientMode = true;
     }
   }
@@ -326,7 +409,7 @@ class FallingItem {
       const heartColors = ['#f43f5e', '#ec4899', '#db2777', '#fb7185', '#fda4af'];
       this.color = heartColors[Math.floor(Math.random() * heartColors.length)];
     } else if (this.type === 'letters') {
-      this.size = 14 + Math.random() * 8;
+      this.size             = 14 + Math.random() * 8;
     } else if (this.type === 'stars') {
       this.size   = 6 + Math.random() * 9;
       this.color  = '#fbbf24';
@@ -381,17 +464,17 @@ class FallingItem {
     } else if (this.type === 'letters') {
       const w = this.size * 1.4;
       const h = this.size;
-      fCtx.fillStyle = '#ffffff';
+      fCtx.fillStyle   = '#ffffff';
       fCtx.strokeStyle = '#f472b6';
-      fCtx.lineWidth = 1;
+      fCtx.lineWidth   = 1;
       fCtx.beginPath();
       fCtx.roundRect(-w/2, -h/2, w, h, 2);
       fCtx.fill();
       fCtx.stroke();
     } else if (this.type === 'stars') {
-      fCtx.fillStyle = this.color;
+      fCtx.fillStyle   = this.color;
       fCtx.shadowColor = '#fef08a';
-      fCtx.shadowBlur = 6;
+      fCtx.shadowBlur  = 6;
       fCtx.beginPath();
       const s = this.size;
       fCtx.moveTo(0, -s);
@@ -401,6 +484,7 @@ class FallingItem {
       fCtx.quadraticCurveTo(0, 0, 0, -s);
       fCtx.fill();
     }
+
     fCtx.restore();
   }
 }
@@ -428,15 +512,15 @@ function renderFalling() {
 renderFalling();
 
 /* ==========================================================
- * 6. ÁP DỤNG CẤU HÌNH VÀO DOM
+ * 6. ÁP DỤNG CẤU HÌNH VÀO TOÀN BỘ DOM
  * ========================================================== */
 const customBgLayer   = document.getElementById('customBgLayer');
 const customBgOverlay = document.getElementById('customBgOverlay');
 
 function applyConfigToDom() {
-  document.title = appConfig.pageTitle || DEFAULT_CONFIG.pageTitle;
-  document.getElementById('badgeText').textContent  = appConfig.badgeText  || DEFAULT_CONFIG.badgeText;
-  document.getElementById('footerText').textContent = appConfig.footerText || DEFAULT_CONFIG.footerText;
+  document.title = appConfig.pageTitle || "Chúc Mừng 20/10 - You're My Queen";
+  document.getElementById('badgeText').textContent  = appConfig.badgeText  || "20.10 Vietnamese Women's Day";
+  document.getElementById('footerText').textContent = appConfig.footerText || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
 
   if (appConfig.bgUrl && appConfig.bgUrl.trim() !== '') {
     customBgLayer.style.backgroundImage = `url('${appConfig.bgUrl}')`;
@@ -456,9 +540,9 @@ function applyConfigToDom() {
     albumGallerySection.classList.add('hidden');
   }
 
-  document.getElementById('displayTitleFixed').textContent    = appConfig.titleFixed || DEFAULT_CONFIG.titleFixed;
-  document.getElementById('cardRecipientHeader').textContent  = appConfig.cardTitle  || DEFAULT_CONFIG.cardTitle;
-  document.getElementById('cardIntroContent').textContent     = appConfig.cardIntro  || DEFAULT_CONFIG.cardIntro;
+  document.getElementById('displayTitleFixed').textContent    = appConfig.titleFixed || "You're My";
+  document.getElementById('cardRecipientHeader').textContent  = appConfig.cardTitle  || "Thân gửi người phụ nữ tuyệt vời nhất!";
+  document.getElementById('cardIntroContent').textContent     = appConfig.cardIntro  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
   document.getElementById('cardLetterContent').textContent    = `"${appConfig.letter}"`;
   document.getElementById('cardSenderFooter').textContent     = `💖 ${appConfig.sender} 💖`;
 
@@ -475,21 +559,39 @@ function applyConfigToDom() {
   initFallingParticles();
 
   if (!isRecipientMode) {
-    document.getElementById('inputPageTitle').value  = appConfig.pageTitle  || DEFAULT_CONFIG.pageTitle;
-    document.getElementById('inputBadgeText').value  = appConfig.badgeText  || DEFAULT_CONFIG.badgeText;
-    document.getElementById('inputFooterText').value = appConfig.footerText || DEFAULT_CONFIG.footerText;
+    document.getElementById('inputPageTitle').value  = appConfig.pageTitle  || "Chúc Mừng 20/10 - You're My Queen";
+    document.getElementById('inputBadgeText').value  = appConfig.badgeText  || "20.10 Vietnamese Women's Day";
+    document.getElementById('inputFooterText').value = appConfig.footerText || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
     document.getElementById('inputTitleFixed').value = appConfig.titleFixed;
     document.getElementById('inputKeywords').value   = appConfig.keywords.join(', ');
     document.getElementById('inputWishLines').value  = appConfig.wishLines.join('\n');
-    document.getElementById('inputCardTitle').value  = appConfig.cardTitle  || DEFAULT_CONFIG.cardTitle;
-    document.getElementById('inputCardIntro').value  = appConfig.cardIntro  || DEFAULT_CONFIG.cardIntro;
+    document.getElementById('inputCardTitle').value  = appConfig.cardTitle  || "Thân gửi người phụ nữ tuyệt vời nhất!";
+    document.getElementById('inputCardIntro').value  = appConfig.cardIntro  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
     document.getElementById('inputSenderName').value = appConfig.sender;
     document.getElementById('inputCardLetter').value = appConfig.letter;
 
-    document.getElementById('inputMusicShareUrl').value = appConfig.musicUrl || '';
-    document.getElementById('inputBgUrl').value         = appConfig.bgUrl || '';
-    document.getElementById('bgOverlayRange').value     = appConfig.bgOpacity || 78;
-    document.getElementById('bgOverlayVal').textContent   = `${appConfig.bgOpacity || 78}%`;
+    const isDataAudio = appConfig.musicUrl && appConfig.musicUrl.startsWith('data:audio');
+    document.getElementById('inputMusicShareUrl').value = isDataAudio ? '' : (appConfig.musicUrl || '');
+
+    const customAudioPreviewBox = document.getElementById('customAudioPreviewBox');
+    const editorAudioPreview    = document.getElementById('editorAudioPreview');
+    const customAudioName       = document.getElementById('customAudioName');
+    if (customAudioPreviewBox && editorAudioPreview) {
+      if (isDataAudio) {
+        customAudioPreviewBox.classList.remove('hidden');
+        customAudioPreviewBox.classList.add('flex');
+        editorAudioPreview.src      = appConfig.musicUrl;
+        customAudioName.textContent = appConfig.musicLabel || "File âm thanh / Ghi âm đã lưu";
+      } else {
+        customAudioPreviewBox.classList.add('hidden');
+        customAudioPreviewBox.classList.remove('flex');
+        editorAudioPreview.src = '';
+      }
+    }
+
+    document.getElementById('inputBgUrl').value       = (appConfig.bgUrl && !appConfig.bgUrl.startsWith('data:')) ? appConfig.bgUrl : '';
+    document.getElementById('bgOverlayRange').value   = appConfig.bgOpacity || 78;
+    document.getElementById('bgOverlayVal').textContent = `${appConfig.bgOpacity || 78}%`;
 
     const effectRadios = document.getElementsByName('fallEffect');
     effectRadios.forEach(r => { if (r.value === (appConfig.fallEffect || 'petals')) r.checked = true; });
@@ -500,13 +602,13 @@ function applyConfigToDom() {
 applyConfigToDom();
 
 /* ==========================================================
- * 7. HỆ THỐNG ÂM THANH
+ * 6. HỆ THỐNG ÂM THANH
  * ========================================================== */
 let isMusicPlaying   = false;
 let ytPlayer         = null;
 let isYtReady        = false;
 let currentYtVideoId = null;
-let pendingPlayMusic = false;
+let pendingPlayMusic  = false;
 
 const bgAudio = document.getElementById('bgAudio');
 bgAudio.volume = 0.8;
@@ -642,7 +744,7 @@ document.addEventListener('click',      unlockAutoPlayOnInteraction, { once: tru
 document.addEventListener('touchstart', unlockAutoPlayOnInteraction, { once: true });
 
 /* ==========================================================
- * 8. TIÊU ĐỀ LUÂN PHIÊN TỪ KHÓA
+ * 7. TIÊU ĐỀ LUÂN PHIÊN TỪ KHÓA
  * ========================================================== */
 const keywordElement = document.getElementById('keywordText');
 let kwIndex    = 0;
@@ -679,7 +781,7 @@ isDeleting = true;
 setTimeout(loopKeywords, 2200);
 
 /* ==========================================================
- * 9. LỜI CHÚC GÕ PHÍM TYPEWRITER
+ * 8. LỜI CHÚC GÕ PHÍM TYPEWRITER
  * ========================================================== */
 const wishContainer = document.getElementById('wishContainer');
 let lineIdx     = 0;
@@ -732,7 +834,7 @@ document.getElementById('restartBtn').addEventListener('click', () => {
 });
 
 /* ==========================================================
- * 10. HỘP QUÀ TƯƠNG TÁC
+ * 9. HỘP QUÀ TƯƠNG TÁC
  * ========================================================== */
 const giftBoxBtn        = document.getElementById('giftBoxBtn');
 const giftSvg           = document.getElementById('giftSvg');
@@ -772,7 +874,7 @@ cardOverlay.addEventListener('click', (e) => {
 });
 
 /* ==========================================================
- * 11. MODAL EDITOR & TẢI ẢNH LÊN CLOUDINARY
+ * 10. MODAL EDITOR VÀ LƯU TRỮ (BẢO VỆ DỮ LIỆU LINK TẶNG)
  * ========================================================== */
 const openEditorModalBtn  = document.getElementById('openEditorModalBtn');
 const closeEditorModalBtn = document.getElementById('closeEditorModalBtn');
@@ -973,18 +1075,18 @@ if (openEditorModalBtn) {
   });
 
   function collectCurrentSettings() {
-    appConfig.pageTitle  = document.getElementById('inputPageTitle').value.trim()  || DEFAULT_CONFIG.pageTitle;
-    appConfig.badgeText  = document.getElementById('inputBadgeText').value.trim()  || DEFAULT_CONFIG.badgeText;
-    appConfig.footerText = document.getElementById('inputFooterText').value.trim() || DEFAULT_CONFIG.footerText;
+    appConfig.pageTitle  = document.getElementById('inputPageTitle').value.trim()  || "Chúc Mừng 20/10 - You're My Queen";
+    appConfig.badgeText  = document.getElementById('inputBadgeText').value.trim()  || "20.10 Vietnamese Women's Day";
+    appConfig.footerText = document.getElementById('inputFooterText').value.trim() || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
 
-    const titleFixed = document.getElementById('inputTitleFixed').value.trim() || DEFAULT_CONFIG.titleFixed;
+    const titleFixed = document.getElementById('inputTitleFixed').value.trim() || "You're My";
     const kwStr      = document.getElementById('inputKeywords').value;
     const keywords   = kwStr.split(',').map(s => s.trim()).filter(Boolean);
     const wishText   = document.getElementById('inputWishLines').value;
     const wishLines  = wishText.split('\n').map(s => s.trim()).filter(Boolean);
-    const cardTitle  = document.getElementById('inputCardTitle').value.trim()  || DEFAULT_CONFIG.cardTitle;
-    const cardIntro  = document.getElementById('inputCardIntro').value.trim()  || DEFAULT_CONFIG.cardIntro;
-    const sender     = document.getElementById('inputSenderName').value.trim() || DEFAULT_CONFIG.sender;
+    const cardTitle  = document.getElementById('inputCardTitle').value.trim()  || "Thân gửi người phụ nữ tuyệt vời nhất!";
+    const cardIntro  = document.getElementById('inputCardIntro').value.trim()  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
+    const sender     = document.getElementById('inputSenderName').value.trim() || "You're always my Sunshine, my Love & my Queen!";
     const letter     = document.getElementById('inputCardLetter').value.trim();
     const typedMusicUrl = document.getElementById('inputMusicShareUrl').value.trim();
     const typedBgUrl    = document.getElementById('inputBgUrl').value.trim();
@@ -1040,7 +1142,7 @@ if (openEditorModalBtn) {
 }
 
 /* ==========================================================
- * 12. CANVAS PHÁO HOA KHI MỞ HỘP QUÀ
+ * 11. CANVAS PHÁO HOA KHI MỞ HỘP QUÀ
  * ========================================================== */
 const confettiCanvas = document.getElementById('confetti-canvas');
 const cCtx           = confettiCanvas.getContext('2d');
@@ -1061,9 +1163,9 @@ class Confetti {
     this.size    = this.isHeart ? (12 + Math.random() * 12) : (6 + Math.random() * 7);
     const angle  = Math.random() * Math.PI * 2;
     const speed  = 4 + Math.random() * 9.5;
-    this.vx      = Math.cos(angle) * speed;
-    this.vy      = Math.sin(angle) * speed - 3.5;
-    this.gravity = 0.22;
+    this.vx       = Math.cos(angle) * speed;
+    this.vy       = Math.sin(angle) * speed - 3.5;
+    this.gravity  = 0.22;
     this.friction = 0.96;
     this.rotation = Math.random() * Math.PI * 2;
     this.rotSpeed = (Math.random() - 0.5) * 0.2;
@@ -1100,7 +1202,7 @@ class Confetti {
       cCtx.quadraticCurveTo(d, 0, d, d / 4);
       cCtx.quadraticCurveTo(d, d / 2, (3 * d) / 4, (3 * d) / 4);
       cCtx.lineTo(d / 2, d);
-      cLon: cCtx.lineTo(d / 4, (3 * d) / 4);
+      cCtx.lineTo(d / 4, (3 * d) / 4);
       cCtx.quadraticCurveTo(0, d / 2, 0, d / 4);
       cCtx.closePath();
       cCtx.fill();
@@ -1129,7 +1231,7 @@ function renderConfetti() {
 renderConfetti();
 
 /* ==========================================================
- * 13. KHỞI CHẠY LẦN ĐẦU
+ * 12. KHỞI CHẠY LẦN ĐẦU
  * ========================================================== */
 window.onload = () => {
   renderWishStructure();

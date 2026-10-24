@@ -1,16 +1,14 @@
 /* ==========================================================
  * CHÚC MỪNG 20/10 - YOU'RE MY QUEEN (SCRIPT.JS)
- * Đã tích hợp Cloudinary (dq4xqmsrh) & Khóa chống lỗi link tặng
+ * Tối ưu hóa Cloudinary & Thu gọn Link siêu ngắn
  * ========================================================== */
 
 const CLOUDINARY_CLOUD_NAME = "dq4xqmsrh";
 const CLOUDINARY_UPLOAD_PRESET = "thiep2010";
 
-let isUploadingImage = false; // Cờ kiểm tra trạng thái upload ảnh lên mây
+let isUploadingImage = false;
 
-/**
- * Tải ảnh trực tiếp lên Cloudinary (Unsigned Upload)
- */
+// Tải ảnh lên Cloudinary và trả về link ngắn gọn
 async function uploadImageToCloudinary(file) {
   isUploadingImage = true;
   const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -29,7 +27,7 @@ async function uploadImageToCloudinary(file) {
     const data = await response.json();
     let optimizedUrl = data.secure_url;
     if (optimizedUrl.includes("/upload/")) {
-      optimizedUrl = optimizedUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1200/");
+      optimizedUrl = optimizedUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1000/");
     }
     isUploadingImage = false;
     return optimizedUrl;
@@ -68,10 +66,16 @@ const DEFAULT_CONFIG = {
 let appConfig = { ...DEFAULT_CONFIG };
 let isRecipientMode = false;
 
-// Thu gọn cấu hình vào Hash an toàn tuyệt đối, không bị lỗi ký tự khi qua Zalo/Messenger
+// Thu gọn cấu hình vào Hash bằng cách chỉ lưu phần thay đổi (Delta) để link siêu ngắn
 function encodeConfigToHash(cfg) {
   try {
-    const jsonStr = JSON.stringify(cfg);
+    const delta = {};
+    for (const key in cfg) {
+      if (JSON.stringify(cfg[key]) !== JSON.stringify(DEFAULT_CONFIG[key])) {
+        delta[key] = cfg[key];
+      }
+    }
+    const jsonStr = JSON.stringify(delta);
     const compressed = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
     return `#card=${compressed}`;
   } catch (e) {
@@ -84,8 +88,8 @@ function decodeHashToConfig(hashStr) {
   try {
     const base64Str = hashStr.replace("#card=", "");
     const jsonStr = decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    const parsed = JSON.parse(jsonStr);
-    return Object.assign({}, DEFAULT_CONFIG, parsed);
+    const delta = JSON.parse(jsonStr);
+    return Object.assign({}, DEFAULT_CONFIG, delta);
   } catch (e) {
     console.error("Lỗi decode Hash:", e);
     return null;
@@ -98,9 +102,6 @@ function checkURLMode() {
     const parsed = decodeHashToConfig(hash);
     if (parsed) {
       appConfig = parsed;
-      if (parsed.secretImg && (!appConfig.photos || appConfig.photos.length === 0)) {
-        appConfig.photos = [{ url: parsed.secretImg, caption: "Khoảnh khắc tuyệt đẹp ✨" }];
-      }
       isRecipientMode = true;
     }
   }
@@ -325,7 +326,7 @@ class FallingItem {
       const heartColors = ['#f43f5e', '#ec4899', '#db2777', '#fb7185', '#fda4af'];
       this.color = heartColors[Math.floor(Math.random() * heartColors.length)];
     } else if (this.type === 'letters') {
-      this.size             = 14 + Math.random() * 8;
+      this.size = 14 + Math.random() * 8;
     } else if (this.type === 'stars') {
       this.size   = 6 + Math.random() * 9;
       this.color  = '#fbbf24';
@@ -380,17 +381,17 @@ class FallingItem {
     } else if (this.type === 'letters') {
       const w = this.size * 1.4;
       const h = this.size;
-      fCtx.fillStyle   = '#ffffff';
+      fCtx.fillStyle = '#ffffff';
       fCtx.strokeStyle = '#f472b6';
-      fCtx.lineWidth   = 1;
+      fCtx.lineWidth = 1;
       fCtx.beginPath();
       fCtx.roundRect(-w/2, -h/2, w, h, 2);
       fCtx.fill();
       fCtx.stroke();
     } else if (this.type === 'stars') {
-      fCtx.fillStyle   = this.color;
+      fCtx.fillStyle = this.color;
       fCtx.shadowColor = '#fef08a';
-      fCtx.shadowBlur  = 6;
+      fCtx.shadowBlur = 6;
       fCtx.beginPath();
       const s = this.size;
       fCtx.moveTo(0, -s);
@@ -400,7 +401,6 @@ class FallingItem {
       fCtx.quadraticCurveTo(0, 0, 0, -s);
       fCtx.fill();
     }
-
     fCtx.restore();
   }
 }
@@ -428,15 +428,15 @@ function renderFalling() {
 renderFalling();
 
 /* ==========================================================
- * 6. ÁP DỤNG CẤU HÌNH VÀO TOÀN BỘ DOM
+ * 6. ÁP DỤNG CẤU HÌNH VÀO DOM
  * ========================================================== */
 const customBgLayer   = document.getElementById('customBgLayer');
 const customBgOverlay = document.getElementById('customBgOverlay');
 
 function applyConfigToDom() {
-  document.title = appConfig.pageTitle || "Chúc Mừng 20/10 - You're My Queen";
-  document.getElementById('badgeText').textContent  = appConfig.badgeText  || "20.10 Vietnamese Women's Day";
-  document.getElementById('footerText').textContent = appConfig.footerText || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
+  document.title = appConfig.pageTitle || DEFAULT_CONFIG.pageTitle;
+  document.getElementById('badgeText').textContent  = appConfig.badgeText  || DEFAULT_CONFIG.badgeText;
+  document.getElementById('footerText').textContent = appConfig.footerText || DEFAULT_CONFIG.footerText;
 
   if (appConfig.bgUrl && appConfig.bgUrl.trim() !== '') {
     customBgLayer.style.backgroundImage = `url('${appConfig.bgUrl}')`;
@@ -456,9 +456,9 @@ function applyConfigToDom() {
     albumGallerySection.classList.add('hidden');
   }
 
-  document.getElementById('displayTitleFixed').textContent    = appConfig.titleFixed || "You're My";
-  document.getElementById('cardRecipientHeader').textContent  = appConfig.cardTitle  || "Thân gửi người phụ nữ tuyệt vời nhất!";
-  document.getElementById('cardIntroContent').textContent     = appConfig.cardIntro  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
+  document.getElementById('displayTitleFixed').textContent    = appConfig.titleFixed || DEFAULT_CONFIG.titleFixed;
+  document.getElementById('cardRecipientHeader').textContent  = appConfig.cardTitle  || DEFAULT_CONFIG.cardTitle;
+  document.getElementById('cardIntroContent').textContent     = appConfig.cardIntro  || DEFAULT_CONFIG.cardIntro;
   document.getElementById('cardLetterContent').textContent    = `"${appConfig.letter}"`;
   document.getElementById('cardSenderFooter').textContent     = `💖 ${appConfig.sender} 💖`;
 
@@ -475,39 +475,21 @@ function applyConfigToDom() {
   initFallingParticles();
 
   if (!isRecipientMode) {
-    document.getElementById('inputPageTitle').value  = appConfig.pageTitle  || "Chúc Mừng 20/10 - You're My Queen";
-    document.getElementById('inputBadgeText').value  = appConfig.badgeText  || "20.10 Vietnamese Women's Day";
-    document.getElementById('inputFooterText').value = appConfig.footerText || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
+    document.getElementById('inputPageTitle').value  = appConfig.pageTitle  || DEFAULT_CONFIG.pageTitle;
+    document.getElementById('inputBadgeText').value  = appConfig.badgeText  || DEFAULT_CONFIG.badgeText;
+    document.getElementById('inputFooterText').value = appConfig.footerText || DEFAULT_CONFIG.footerText;
     document.getElementById('inputTitleFixed').value = appConfig.titleFixed;
     document.getElementById('inputKeywords').value   = appConfig.keywords.join(', ');
     document.getElementById('inputWishLines').value  = appConfig.wishLines.join('\n');
-    document.getElementById('inputCardTitle').value  = appConfig.cardTitle  || "Thân gửi người phụ nữ tuyệt vời nhất!";
-    document.getElementById('inputCardIntro').value  = appConfig.cardIntro  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
+    document.getElementById('inputCardTitle').value  = appConfig.cardTitle  || DEFAULT_CONFIG.cardTitle;
+    document.getElementById('inputCardIntro').value  = appConfig.cardIntro  || DEFAULT_CONFIG.cardIntro;
     document.getElementById('inputSenderName').value = appConfig.sender;
     document.getElementById('inputCardLetter').value = appConfig.letter;
 
-    const isDataAudio = appConfig.musicUrl && appConfig.musicUrl.startsWith('data:audio');
-    document.getElementById('inputMusicShareUrl').value = isDataAudio ? '' : (appConfig.musicUrl || '');
-
-    const customAudioPreviewBox = document.getElementById('customAudioPreviewBox');
-    const editorAudioPreview    = document.getElementById('editorAudioPreview');
-    const customAudioName       = document.getElementById('customAudioName');
-    if (customAudioPreviewBox && editorAudioPreview) {
-      if (isDataAudio) {
-        customAudioPreviewBox.classList.remove('hidden');
-        customAudioPreviewBox.classList.add('flex');
-        editorAudioPreview.src      = appConfig.musicUrl;
-        customAudioName.textContent = appConfig.musicLabel || "File âm thanh / Ghi âm đã lưu";
-      } else {
-        customAudioPreviewBox.classList.add('hidden');
-        customAudioPreviewBox.classList.remove('flex');
-        editorAudioPreview.src = '';
-      }
-    }
-
-    document.getElementById('inputBgUrl').value       = (appConfig.bgUrl && !appConfig.bgUrl.startsWith('data:')) ? appConfig.bgUrl : '';
-    document.getElementById('bgOverlayRange').value   = appConfig.bgOpacity || 78;
-    document.getElementById('bgOverlayVal').textContent = `${appConfig.bgOpacity || 78}%`;
+    document.getElementById('inputMusicShareUrl').value = appConfig.musicUrl || '';
+    document.getElementById('inputBgUrl').value         = appConfig.bgUrl || '';
+    document.getElementById('bgOverlayRange').value     = appConfig.bgOpacity || 78;
+    document.getElementById('bgOverlayVal').textContent   = `${appConfig.bgOpacity || 78}%`;
 
     const effectRadios = document.getElementsByName('fallEffect');
     effectRadios.forEach(r => { if (r.value === (appConfig.fallEffect || 'petals')) r.checked = true; });
@@ -518,13 +500,13 @@ function applyConfigToDom() {
 applyConfigToDom();
 
 /* ==========================================================
- * 6. HỆ THỐNG ÂM THANH
+ * 7. HỆ THỐNG ÂM THANH
  * ========================================================== */
 let isMusicPlaying   = false;
 let ytPlayer         = null;
 let isYtReady        = false;
 let currentYtVideoId = null;
-let pendingPlayMusic  = false;
+let pendingPlayMusic = false;
 
 const bgAudio = document.getElementById('bgAudio');
 bgAudio.volume = 0.8;
@@ -660,7 +642,7 @@ document.addEventListener('click',      unlockAutoPlayOnInteraction, { once: tru
 document.addEventListener('touchstart', unlockAutoPlayOnInteraction, { once: true });
 
 /* ==========================================================
- * 7. TIÊU ĐỀ LUÂN PHIÊN TỪ KHÓA
+ * 8. TIÊU ĐỀ LUÂN PHIÊN TỪ KHÓA
  * ========================================================== */
 const keywordElement = document.getElementById('keywordText');
 let kwIndex    = 0;
@@ -697,7 +679,7 @@ isDeleting = true;
 setTimeout(loopKeywords, 2200);
 
 /* ==========================================================
- * 8. LỜI CHÚC GÕ PHÍM TYPEWRITER
+ * 9. LỜI CHÚC GÕ PHÍM TYPEWRITER
  * ========================================================== */
 const wishContainer = document.getElementById('wishContainer');
 let lineIdx     = 0;
@@ -750,7 +732,7 @@ document.getElementById('restartBtn').addEventListener('click', () => {
 });
 
 /* ==========================================================
- * 9. HỘP QUÀ TƯƠNG TÁC
+ * 10. HỘP QUÀ TƯƠNG TÁC
  * ========================================================== */
 const giftBoxBtn        = document.getElementById('giftBoxBtn');
 const giftSvg           = document.getElementById('giftSvg');
@@ -790,7 +772,7 @@ cardOverlay.addEventListener('click', (e) => {
 });
 
 /* ==========================================================
- * 10. MODAL EDITOR VÀ LƯU TRỮ (BẢO VỆ DỮ LIỆU LINK TẶNG)
+ * 11. MODAL EDITOR & TẢI ẢNH LÊN CLOUDINARY
  * ========================================================== */
 const openEditorModalBtn  = document.getElementById('openEditorModalBtn');
 const closeEditorModalBtn = document.getElementById('closeEditorModalBtn');
@@ -991,18 +973,18 @@ if (openEditorModalBtn) {
   });
 
   function collectCurrentSettings() {
-    appConfig.pageTitle  = document.getElementById('inputPageTitle').value.trim()  || "Chúc Mừng 20/10 - You're My Queen";
-    appConfig.badgeText  = document.getElementById('inputBadgeText').value.trim()  || "20.10 Vietnamese Women's Day";
-    appConfig.footerText = document.getElementById('inputFooterText').value.trim() || "Gửi trọn yêu thương ngày 20/10 • Ngày Phụ Nữ Việt Nam";
+    appConfig.pageTitle  = document.getElementById('inputPageTitle').value.trim()  || DEFAULT_CONFIG.pageTitle;
+    appConfig.badgeText  = document.getElementById('inputBadgeText').value.trim()  || DEFAULT_CONFIG.badgeText;
+    appConfig.footerText = document.getElementById('inputFooterText').value.trim() || DEFAULT_CONFIG.footerText;
 
-    const titleFixed = document.getElementById('inputTitleFixed').value.trim() || "You're My";
+    const titleFixed = document.getElementById('inputTitleFixed').value.trim() || DEFAULT_CONFIG.titleFixed;
     const kwStr      = document.getElementById('inputKeywords').value;
     const keywords   = kwStr.split(',').map(s => s.trim()).filter(Boolean);
     const wishText   = document.getElementById('inputWishLines').value;
     const wishLines  = wishText.split('\n').map(s => s.trim()).filter(Boolean);
-    const cardTitle  = document.getElementById('inputCardTitle').value.trim()  || "Thân gửi người phụ nữ tuyệt vời nhất!";
-    const cardIntro  = document.getElementById('inputCardIntro').value.trim()  || "Nhân ngày Phụ Nữ Việt Nam 20/10, xin gửi tới bạn muôn vàn lời chúc an lành, rực rỡ và hạnh phúc nhất.";
-    const sender     = document.getElementById('inputSenderName').value.trim() || "You're always my Sunshine, my Love & my Queen!";
+    const cardTitle  = document.getElementById('inputCardTitle').value.trim()  || DEFAULT_CONFIG.cardTitle;
+    const cardIntro  = document.getElementById('inputCardIntro').value.trim()  || DEFAULT_CONFIG.cardIntro;
+    const sender     = document.getElementById('inputSenderName').value.trim() || DEFAULT_CONFIG.sender;
     const letter     = document.getElementById('inputCardLetter').value.trim();
     const typedMusicUrl = document.getElementById('inputMusicShareUrl').value.trim();
     const typedBgUrl    = document.getElementById('inputBgUrl').value.trim();
@@ -1058,7 +1040,7 @@ if (openEditorModalBtn) {
 }
 
 /* ==========================================================
- * 11. CANVAS PHÁO HOA KHI MỞ HỘP QUÀ
+ * 12. CANVAS PHÁO HOA KHI MỞ HỘP QUÀ
  * ========================================================== */
 const confettiCanvas = document.getElementById('confetti-canvas');
 const cCtx           = confettiCanvas.getContext('2d');
@@ -1079,9 +1061,9 @@ class Confetti {
     this.size    = this.isHeart ? (12 + Math.random() * 12) : (6 + Math.random() * 7);
     const angle  = Math.random() * Math.PI * 2;
     const speed  = 4 + Math.random() * 9.5;
-    this.vx       = Math.cos(angle) * speed;
-    this.vy       = Math.sin(angle) * speed - 3.5;
-    this.gravity  = 0.22;
+    this.vx      = Math.cos(angle) * speed;
+    this.vy      = Math.sin(angle) * speed - 3.5;
+    this.gravity = 0.22;
     this.friction = 0.96;
     this.rotation = Math.random() * Math.PI * 2;
     this.rotSpeed = (Math.random() - 0.5) * 0.2;
@@ -1118,7 +1100,7 @@ class Confetti {
       cCtx.quadraticCurveTo(d, 0, d, d / 4);
       cCtx.quadraticCurveTo(d, d / 2, (3 * d) / 4, (3 * d) / 4);
       cCtx.lineTo(d / 2, d);
-      cCtx.lineTo(d / 4, (3 * d) / 4);
+      cLon: cCtx.lineTo(d / 4, (3 * d) / 4);
       cCtx.quadraticCurveTo(0, d / 2, 0, d / 4);
       cCtx.closePath();
       cCtx.fill();
@@ -1147,7 +1129,7 @@ function renderConfetti() {
 renderConfetti();
 
 /* ==========================================================
- * 12. KHỞI CHẠY LẦN ĐẦU
+ * 13. KHỞI CHẠY LẦN ĐẦU
  * ========================================================== */
 window.onload = () => {
   renderWishStructure();

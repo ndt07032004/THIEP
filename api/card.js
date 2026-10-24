@@ -20,6 +20,8 @@ const KEY_MAP_REV = {
   m: 'bgOpacity', n: 'photos', o: 'musicUrl', p: 'musicLabel'
 };
 // Ảnh dự phòng khi thiệp không có ảnh nào (tuỳ chọn, đặt trong Vercel > Settings > Environment Variables)
+const GENERIC_TITLE = 'Có một tấm thiệp gửi tới bạn 💌';
+const GENERIC_DESC = 'Chạm để mở hộp quà 🎁';
 const FALLBACK_IMAGE = process.env.DEFAULT_OG_IMAGE || '';
 
 function expandUrl(u) {
@@ -53,22 +55,35 @@ module.exports = (req, res) => {
   let html = getHtml();
   try {
     const u = new URL(req.url, 'http://localhost');
-    const token = u.searchParams.get('c') || '';
+    const token = String((req.query && req.query.c) || u.searchParams.get('c') || '');
     const host = req.headers['x-forwarded-host'] || req.headers.host || '';
     // Ảnh mặc định: biến môi trường DEFAULT_OG_IMAGE > file og-default.jpg trong repo
     const defaultImage = FALLBACK_IMAGE || (host ? `https://${host}/og-default.jpg` : '');
 
     let title = '', desc = '', image = '', pageUrl = host ? `https://${host}/` : '';
-    let hasCard = false;
+    let hasCard = false, imageIsCrop = false;
 
     if (token && token.length < 30000) {
       try {
-        const cfg = decodeToken(token);
+        const cfg = decodeToken(token);   // chỉ chứa các trường người dùng ĐÃ SỬA (giống mặc định thì không có)
         hasCard = true;
-        title = clip(cfg.cardTitle || cfg.pageTitle || "Chúc Mừng 20/10", 90);
-        desc = clip(cfg.cardIntro || cfg.sender || 'Một tấm thiệp nhỏ gửi tới bạn 💗', 200);
+        const str = (v) => (typeof v === 'string' ? v.trim() : '');
+
+        // TIÊU ĐỀ: tên tab > tiêu đề thiệp > tiêu đề lớn trên trang > chữ chung
+        const bigTitle = (cfg.titleFixed || (cfg.keywords && cfg.keywords[0]))
+          ? `${str(cfg.titleFixed) || "You're My"} ${(cfg.keywords && str(cfg.keywords[0])) || 'Queen'}`.trim() : '';
+        title = clip(str(cfg.pageTitle) || str(cfg.cardTitle) || bigTitle || GENERIC_TITLE, 90);
+
+        // MÔ TẢ: "Từ <người gửi>" + câu mở đầu thiệp (nếu có sửa) > chữ chung
+        const sender = str(cfg.sender), intro = str(cfg.cardIntro);
+        desc = clip(
+          sender ? `💌 Từ ${sender}${intro ? ' · ' + intro : ''}` : (intro || GENERIC_DESC),
+          200
+        );
+
         const first = Array.isArray(cfg.photos) && cfg.photos[0] ? cfg.photos[0][0] : '';
         image = toOgImage(first) || toOgImage(cfg.bgUrl);
+        if (image) imageIsCrop = true;
         pageUrl = host ? `https://${host}/?c=${token}` : '';
       } catch (e) {
         console.error('card decode error:', e); // token hỏng -> coi như link trần
@@ -89,8 +104,8 @@ module.exports = (req, res) => {
       hasCard && `<meta property="og:description" content="${esc(desc)}">`,
       pageUrl && `<meta property="og:url" content="${esc(pageUrl)}">`,
       image && `<meta property="og:image" content="${esc(image)}">`,
-      image && `<meta property="og:image:width" content="1200">`,
-      image && `<meta property="og:image:height" content="630">`,
+      imageIsCrop && `<meta property="og:image:width" content="1200">`,
+      imageIsCrop && `<meta property="og:image:height" content="630">`,
       `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
     ].filter(Boolean).join('\n  ');
     html = html.replace('</head>', `  ${tags}\n</head>`);

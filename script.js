@@ -68,7 +68,11 @@ const DEFAULT_CONFIG = {
   musicUrl: ""
 };
 
-let appConfig = { ...DEFAULT_CONFIG };
+// Bản gốc bất biến để so sánh khi nén link (tránh bị "nhiễm" khi thêm ảnh vào mảng)
+const PRISTINE_DEFAULTS = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+const cloneDefaults = () => JSON.parse(JSON.stringify(PRISTINE_DEFAULTS));
+
+let appConfig = cloneDefaults();
 let isRecipientMode = false;
 
 /* ----------------------------------------------------------
@@ -129,7 +133,7 @@ function encodeConfigToHash(cfg) {
       if (val === undefined || val === null || val === '') continue;
       if (Array.isArray(val) && val.length === 0) continue;
       // Bỏ qua nếu giống mặc định
-      if (JSON.stringify(val) === JSON.stringify(DEFAULT_CONFIG[key])) continue;
+      if (JSON.stringify(val) === JSON.stringify(PRISTINE_DEFAULTS[key])) continue;
 
       if (key === 'photos') {
         val = val.map(p => p.caption ? [shortenUrl(p.url), p.caption] : [shortenUrl(p.url)]);
@@ -152,7 +156,7 @@ function decodeHashToConfig(hashStr) {
     if (hashStr.startsWith('#card=')) {
       const base64Str = hashStr.replace("#card=", "");
       const jsonStr = decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-      return Object.assign({}, DEFAULT_CONFIG, JSON.parse(jsonStr));
+      return Object.assign(cloneDefaults(), JSON.parse(jsonStr));
     }
     // Link mới (#c=...)
     const bytes = fromBase64Url(hashStr.replace(/^#?c=/, ""));
@@ -169,7 +173,7 @@ function decodeHashToConfig(hashStr) {
       }
       cfg[key] = val;
     }
-    return Object.assign({}, DEFAULT_CONFIG, cfg);
+    return Object.assign(cloneDefaults(), cfg);
   } catch (e) {
     console.error("Lỗi decode Hash:", e);
     return null;
